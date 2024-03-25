@@ -1,4 +1,4 @@
-Name:                bytestring
+Name:                bytestring-lh
 Version:             0.13.0.0
 Synopsis:            Fast, compact, strict and lazy byte strings with a list interface
 Description:
@@ -83,7 +83,7 @@ source-repository head
   location: https://github.com/haskell/bytestring
 
 library
-  build-depends:     base >= 4.9 && < 5, ghc-prim, deepseq, template-haskell
+  build-depends:     base >= 4.9 && < 5, ghc-prim, deepseq, template-haskell, liquid-prelude, liquidhaskell
 
   if impl(ghc < 9.4)
     build-depends: data-array-byte >= 0.1 && < 0.2
@@ -141,6 +141,7 @@ library
                     -fmax-simplifier-iterations=10
                     -fdicts-cheap
                     -fspec-constr-count=6
+                    -fplugin=LiquidHaskell
 
   if arch(javascript) || flag(pure-haskell)
     cpp-options: -DPURE_HASKELL=1
