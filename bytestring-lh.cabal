@@ -89,6 +89,7 @@ library
     build-depends: data-array-byte >= 0.1 && < 0.2
 
   exposed-modules:   Data.ByteString
+                     Data.LiquidPtr
                      Data.ByteString.Char8
                      Data.ByteString.Unsafe
                      Data.ByteString.Internal
@@ -111,6 +112,7 @@ library
                      Data.ByteString.Builder.Prim.Binary
                      Data.ByteString.Builder.Prim.Internal.Base16
                      Data.ByteString.Builder.Prim.Internal.Floating
+                     Data.ByteString.Builder.Prim.Internal.UncheckedShifts
                      Data.ByteString.Builder.RealFloat.F2S
                      Data.ByteString.Builder.RealFloat.D2S
                      Data.ByteString.Builder.RealFloat.Internal

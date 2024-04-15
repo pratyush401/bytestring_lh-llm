@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<title>/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs</title>
+</head>
+<head>
+<link type='text/css' rel='stylesheet' href='liquid.css' />
+</head>
+
+<body>
+<hr>
+Put mouse over identifiers to see inferred types
+<pre><span class=hs-linenum>  1: </span><a class=annot href="#"><span class=annottext>GHC.Types.Module</span><span class='hs-comment'>{-# LANGUAGE CPP, MagicHash #-}</span></a>
+<span class=hs-linenum>  2: </span><span class='hs-cpp'>#if __GLASGOW_HASKELL__ &gt;= 703</span>
+<span class=hs-linenum>  3: </span><span class='hs-comment'>{-# LANGUAGE Unsafe #-}</span>
+<span class=hs-linenum>  4: </span><span class='hs-cpp'>#endif</span>
+<span class=hs-linenum>  5: </span><span class='hs-comment'>-- |</span>
+<span class=hs-linenum>  6: </span><span class='hs-comment'>-- Copyright   : (c) 2010 Simon Meier</span>
+<span class=hs-linenum>  7: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum>  8: </span><span class='hs-comment'>--               Original serialization code from 'Data.Binary.Builder':</span>
+<span class=hs-linenum>  9: </span><span class='hs-comment'>--               (c) Lennart Kolmodin, Ross Patterson</span>
+<span class=hs-linenum> 10: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 11: </span><span class='hs-comment'>-- License     : BSD3-style (see LICENSE)</span>
+<span class=hs-linenum> 12: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 13: </span><span class='hs-comment'>-- Maintainer  : Simon Meier &lt;iridcode@gmail.com&gt;</span>
+<span class=hs-linenum> 14: </span><span class='hs-comment'>-- Portability : GHC</span>
+<span class=hs-linenum> 15: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 16: </span><span class='hs-comment'>-- Utilty module defining unchecked shifts.</span>
+<span class=hs-linenum> 17: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 18: </span><span class='hs-comment'>-- These functions are undefined when the amount being shifted by is</span>
+<span class=hs-linenum> 19: </span><span class='hs-comment'>-- greater than the size in bits of a machine Int#.-</span>
+<span class=hs-linenum> 20: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 21: </span><span class='hs-cpp'>#if !defined(__HADDOCK__)</span>
+<span class=hs-linenum> 22: </span><span class='hs-cpp'>#include "MachDeps.h"</span>
+<span class=hs-linenum> 23: </span><span class='hs-cpp'>#endif</span>
+<span class=hs-linenum> 24: </span>
+<span class=hs-linenum> 25: </span><span class='hs-keyword'>module</span> <span class='hs-conid'>Data.ByteString.Builder.Prim.Internal.UncheckedShifts</span> <span class='hs-layout'>(</span>
+<span class=hs-linenum> 26: </span>    <span class='hs-varid'>shiftr_w16</span>
+<span class=hs-linenum> 27: </span>  <span class='hs-layout'>,</span> <span class='hs-varid'>shiftr_w32</span>
+<span class=hs-linenum> 28: </span>  <span class='hs-layout'>,</span> <span class='hs-varid'>shiftr_w64</span>
+<span class=hs-linenum> 29: </span>  <span class='hs-layout'>,</span> <span class='hs-varid'>shiftr_w</span>
+<span class=hs-linenum> 30: </span>
+<span class=hs-linenum> 31: </span>  <span class='hs-layout'>,</span> <span class='hs-varid'>caseWordSize_32_64</span>
+<span class=hs-linenum> 32: </span>  <span class='hs-layout'>)</span> <span class='hs-keyword'>where</span>
+<span class=hs-linenum> 33: </span>
+<span class=hs-linenum> 34: </span>
+<span class=hs-linenum> 35: </span><span class='hs-cpp'>#if !defined(__HADDOCK__)</span>
+<span class=hs-linenum> 36: </span><span class='hs-keyword'>import</span> <span class='hs-conid'>GHC.Base</span>
+<span class=hs-linenum> 37: </span><span class='hs-keyword'>import</span> <span class='hs-conid'>GHC.Word</span> <span class='hs-layout'>(</span><span class='hs-conid'>Word32</span><span class='hs-layout'>(</span><span class='hs-keyglyph'>..</span><span class='hs-layout'>)</span><span class='hs-layout'>,</span><span class='hs-conid'>Word16</span><span class='hs-layout'>(</span><span class='hs-keyglyph'>..</span><span class='hs-layout'>)</span><span class='hs-layout'>,</span><span class='hs-conid'>Word64</span><span class='hs-layout'>(</span><span class='hs-keyglyph'>..</span><span class='hs-layout'>)</span><span class='hs-layout'>)</span>
+<span class=hs-linenum> 38: </span>
+<span class=hs-linenum> 39: </span><span class='hs-cpp'>#if WORD_SIZE_IN_BITS &lt; 64 &amp;&amp; __GLASGOW_HASKELL__ &gt;= 608</span>
+<span class=hs-linenum> 40: </span><span class='hs-keyword'>import</span> <span class='hs-conid'>GHC.Word</span> <span class='hs-layout'>(</span><span class='hs-varid'>uncheckedShiftRL64</span><span class='hs-cpp'>#</span><span class='hs-layout'>)</span>
+<span class=hs-linenum> 41: </span><span class='hs-cpp'>#endif</span>
+<span class=hs-linenum> 42: </span><span class='hs-cpp'>#else</span>
+<span class=hs-linenum> 43: </span><span class='hs-keyword'>import</span> <span class='hs-conid'>Data.Word</span>
+<span class=hs-linenum> 44: </span><span class='hs-cpp'>#endif</span>
+<span class=hs-linenum> 45: </span>
+<span class=hs-linenum> 46: </span><span class='hs-keyword'>import</span> <span class='hs-conid'>Foreign</span>
+<span class=hs-linenum> 47: </span>
+<span class=hs-linenum> 48: </span>
+<span class=hs-linenum> 49: </span><span class='hs-comment'>------------------------------------------------------------------------</span>
+<span class=hs-linenum> 50: </span><span class='hs-comment'>-- Unchecked shifts</span>
+<span class=hs-linenum> 51: </span>
+<span class=hs-linenum> 52: </span><span class='hs-comment'>-- | Right-shift of a 'Word16'.</span>
+<span class=hs-linenum> 53: </span><span class='hs-comment'>{-# INLINE shiftr_w16 #-}</span>
+<span class=hs-linenum> 54: </span><span class='hs-definition'>shiftr_w16</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Word16</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Int</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Word16</span>
+<span class=hs-linenum> 55: </span>
+<span class=hs-linenum> 56: </span><span class='hs-comment'>-- | Right-shift of a 'Word32'.</span>
+<span class=hs-linenum> 57: </span><span class='hs-comment'>{-# INLINE shiftr_w32 #-}</span>
+<span class=hs-linenum> 58: </span><span class='hs-definition'>shiftr_w32</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Word32</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Int</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Word32</span>
+<span class=hs-linenum> 59: </span>
+<span class=hs-linenum> 60: </span><span class='hs-comment'>-- | Right-shift of a 'Word64'.</span>
+<span class=hs-linenum> 61: </span><span class='hs-comment'>{-# INLINE shiftr_w64 #-}</span>
+<span class=hs-linenum> 62: </span><span class='hs-definition'>shiftr_w64</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Word64</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Int</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Word64</span>
+<span class=hs-linenum> 63: </span>
+<span class=hs-linenum> 64: </span><span class='hs-comment'>-- | Right-shift of a 'Word'.</span>
+<span class=hs-linenum> 65: </span><span class='hs-comment'>{-# INLINE shiftr_w #-}</span>
+<span class=hs-linenum> 66: </span><span class='hs-definition'>shiftr_w</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Word</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Int</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Word</span>
+<span class=hs-linenum> 67: </span><span class='hs-cpp'>#if WORD_SIZE_IN_BITS &lt; 64</span>
+<span class=hs-linenum> 68: </span><span class='hs-definition'>shiftr_w</span> <span class='hs-varid'>w</span> <span class='hs-varid'>s</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>fromIntegral</span> <span class='hs-varop'>$</span> <span class='hs-layout'>(</span><span class='hs-varop'>`shiftr_w32`</span> <span class='hs-varid'>s</span><span class='hs-layout'>)</span> <span class='hs-varop'>$</span> <span class='hs-varid'>fromIntegral</span> <span class='hs-varid'>w</span>
+<span class=hs-linenum> 69: </span><span class='hs-cpp'>#else</span>
+<span class=hs-linenum> 70: </span><a class=annot href="#"><span class=annottext>GHC.Types.Word -&gt; GHC.Types.Int -&gt; GHC.Types.Word</span><span class='hs-definition'>shiftr_w</span></a> <a class=annot href="#"><span class=annottext>GHC.Types.Word</span><span class='hs-varid'>w</span></a> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-varid'>s</span></a> <span class='hs-keyglyph'>=</span> <a class=annot href="#"><span class=annottext>x1:GHC.Word.Word64 -&gt; {v : GHC.Types.Word | v == x1}</span><span class='hs-varid'>fromIntegral</span></a> <span class='hs-varop'>$</span> <a class=annot href="#"><span class=annottext>GHC.Word.Word64</span><span class='hs-layout'>(</span></a><a class=annot href="#"><span class=annottext>GHC.Word.Word64 -&gt; GHC.Types.Int -&gt; GHC.Word.Word64</span><span class='hs-varop'>`shiftr_w64`</span></a> <a class=annot href="#"><span class=annottext>{v : GHC.Types.Int | v == s}</span><span class='hs-varid'>s</span></a><span class='hs-layout'>)</span> <span class='hs-varop'>$</span> <a class=annot href="#"><span class=annottext>{v : GHC.Word.Word64 | v == w}</span><span class='hs-varid'>fromIntegral</span></a> <a class=annot href="#"><span class=annottext>{v : GHC.Types.Word | v == w}</span><span class='hs-varid'>w</span></a>
+<span class=hs-linenum> 71: </span><span class='hs-cpp'>#endif</span>
+<span class=hs-linenum> 72: </span>
+<span class=hs-linenum> 73: </span><span class='hs-cpp'>#if !defined(__HADDOCK__)</span>
+<span class=hs-linenum> 74: </span><a class=annot href="#"><span class=annottext>GHC.Word.Word16 -&gt; GHC.Types.Int -&gt; GHC.Word.Word16</span><span class='hs-definition'>shiftr_w16</span></a> <span class='hs-layout'>(</span><span class='hs-conid'>W16</span><span class='hs-cpp'>#</span> <span class='hs-varid'>w</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-conid'>I</span><span class='hs-cpp'>#</span> <span class='hs-varid'>i</span><span class='hs-layout'>)</span> <span class='hs-keyglyph'>=</span> <a class=annot href="#"><span class=annottext>GHC.Prim.Word16#</span><span class='hs-conid'>W16</span></a><span class='hs-cpp'>#</span> <a class=annot href="#"><span class=annottext>GHC.Prim.Word16#</span><span class='hs-layout'>(</span></a><span class='hs-varid'>undefined</span> <a class=annot href="#"><span class=annottext>[GHC.Types.Char]</span><span class='hs-str'>"TODO:LH"</span></a><span class='hs-layout'>)</span> <span class='hs-comment'>{- (w `uncheckedShiftRL#`   i) -}</span>
+<span class=hs-linenum> 75: </span><a class=annot href="#"><span class=annottext>GHC.Word.Word32 -&gt; GHC.Types.Int -&gt; GHC.Word.Word32</span><span class='hs-definition'>shiftr_w32</span></a> <span class='hs-layout'>(</span><span class='hs-conid'>W32</span><span class='hs-cpp'>#</span> <span class='hs-varid'>w</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-conid'>I</span><span class='hs-cpp'>#</span> <span class='hs-varid'>i</span><span class='hs-layout'>)</span> <span class='hs-keyglyph'>=</span> <a class=annot href="#"><span class=annottext>GHC.Prim.Word32#</span><span class='hs-conid'>W32</span></a><span class='hs-cpp'>#</span> <a class=annot href="#"><span class=annottext>GHC.Prim.Word32#</span><span class='hs-layout'>(</span></a><span class='hs-varid'>undefined</span> <a class=annot href="#"><span class=annottext>[GHC.Types.Char]</span><span class='hs-str'>"TODO:LH"</span></a><span class='hs-layout'>)</span> <span class='hs-comment'>{- (w `uncheckedShiftRL#`   i) -}</span>
+<span class=hs-linenum> 76: </span>
+<span class=hs-linenum> 77: </span><span class='hs-cpp'>#if WORD_SIZE_IN_BITS &lt; 64</span>
+<span class=hs-linenum> 78: </span><span class='hs-definition'>shiftr_w64</span> <span class='hs-layout'>(</span><span class='hs-conid'>W64</span><span class='hs-cpp'>#</span> <span class='hs-varid'>w</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-conid'>I</span><span class='hs-cpp'>#</span> <span class='hs-varid'>i</span><span class='hs-layout'>)</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>W64</span><span class='hs-cpp'>#</span> <span class='hs-layout'>(</span><span class='hs-varid'>w</span> <span class='hs-varop'>`</span><span class='hs-varid'>uncheckedShiftRL64</span><span class='hs-cpp'>#</span><span class='hs-varop'>`</span> <span class='hs-varid'>i</span><span class='hs-layout'>)</span>
+<span class=hs-linenum> 79: </span><span class='hs-cpp'>#else</span>
+<span class=hs-linenum> 80: </span><a class=annot href="#"><span class=annottext>GHC.Word.Word64 -&gt; GHC.Types.Int -&gt; GHC.Word.Word64</span><span class='hs-definition'>shiftr_w64</span></a> <span class='hs-layout'>(</span><span class='hs-conid'>W64</span><span class='hs-cpp'>#</span> <span class='hs-varid'>w</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-conid'>I</span><span class='hs-cpp'>#</span> <span class='hs-varid'>i</span><span class='hs-layout'>)</span> <span class='hs-keyglyph'>=</span> <a class=annot href="#"><span class=annottext>GHC.Prim.Word#</span><span class='hs-conid'>W64</span></a><span class='hs-cpp'>#</span> <a class=annot href="#"><span class=annottext>GHC.Prim.Word#</span><span class='hs-layout'>(</span></a><a class=annot href="#"><span class=annottext>{v : GHC.Prim.Word# | v == w}</span><span class='hs-varid'>w</span></a> <span class='hs-varop'>`</span><span class='hs-varid'>uncheckedShiftRL</span><span class='hs-cpp'>#</span><span class='hs-varop'>`</span> <a class=annot href="#"><span class=annottext>{v : GHC.Prim.Int# | v == i}</span><span class='hs-varid'>i</span></a><span class='hs-layout'>)</span>
+<span class=hs-linenum> 81: </span><span class='hs-cpp'>#endif</span>
+<span class=hs-linenum> 82: </span>
+<span class=hs-linenum> 83: </span><span class='hs-cpp'>#else</span>
+<span class=hs-linenum> 84: </span><span class='hs-definition'>shiftr_w16</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>shiftR</span>
+<span class=hs-linenum> 85: </span><span class='hs-definition'>shiftr_w32</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>shiftR</span>
+<span class=hs-linenum> 86: </span><span class='hs-definition'>shiftr_w64</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>shiftR</span>
+<span class=hs-linenum> 87: </span><span class='hs-cpp'>#endif</span>
+<span class=hs-linenum> 88: </span>
+<span class=hs-linenum> 89: </span>
+<span class=hs-linenum> 90: </span><span class='hs-comment'>-- | Select an implementation depending on the bit-size of 'Word's.</span>
+<span class=hs-linenum> 91: </span><span class='hs-comment'>-- Currently, it produces a runtime failure if the bitsize is different.</span>
+<span class=hs-linenum> 92: </span><span class='hs-comment'>-- This is detected by the testsuite.</span>
+<span class=hs-linenum> 93: </span><span class='hs-comment'>{-# INLINE caseWordSize_32_64 #-}</span>
+<span class=hs-linenum> 94: </span><span class='hs-definition'>caseWordSize_32_64</span> <span class='hs-keyglyph'>::</span> <span class='hs-varid'>a</span> <span class='hs-comment'>-- Value to use for 32-bit 'Word's</span>
+<span class=hs-linenum> 95: </span>                   <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>a</span> <span class='hs-comment'>-- Value to use for 64-bit 'Word's</span>
+<span class=hs-linenum> 96: </span>                   <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>a</span>
+<span class=hs-linenum> 97: </span><a class=annot href="#"><span class=annottext>forall a . a -&gt; a -&gt; a</span><span class='hs-definition'>caseWordSize_32_64</span></a> <a class=annot href="#"><span class=annottext>a</span><span class='hs-varid'>f32</span></a> <a class=annot href="#"><span class=annottext>a</span><span class='hs-varid'>f64</span></a> <span class='hs-keyglyph'>=</span>
+<span class=hs-linenum> 98: </span><span class='hs-comment'>-- #if MIN_VERSION_liquid_base(4,7,0)</span>
+<span class=hs-linenum> 99: </span><span class='hs-comment'>--  case finiteBitSize (undefined :: Word) of</span>
+<span class=hs-linenum>100: </span><span class='hs-comment'>-- #else</span>
+<span class=hs-linenum>101: </span>  <span class='hs-keyword'>case</span> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-varid'>bitSize</span></a> <a class=annot href="#"><span class=annottext>GHC.Types.Word</span><span class='hs-layout'>(</span></a><span class='hs-varid'>undefined</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Word</span><span class='hs-layout'>)</span> <span class='hs-keyword'>of</span>
+<span class=hs-linenum>102: </span><span class='hs-comment'>-- #endif</span>
+<span class=hs-linenum>103: </span>    <span class='hs-num'>32</span> <span class='hs-keyglyph'>-&gt;</span> <a class=annot href="#"><span class=annottext>{VV : a | VV == f32}</span><span class='hs-varid'>f32</span></a>
+<span class=hs-linenum>104: </span>    <span class='hs-num'>64</span> <span class='hs-keyglyph'>-&gt;</span> <a class=annot href="#"><span class=annottext>{VV : a | VV == f64}</span><span class='hs-varid'>f64</span></a>
+<span class=hs-linenum>105: </span>    <span class='hs-varid'>s</span>  <span class='hs-keyglyph'>-&gt;</span> <a class=annot href="#"><span class=annottext>{v : [GHC.Types.Char] | false} -&gt; a</span><span class='hs-varid'>error</span></a> <span class='hs-varop'>$</span> <a class=annot href="#"><span class=annottext>[GHC.Types.Char]</span><span class='hs-str'>"caseWordSize_32_64: unsupported Word bit-size "</span></a> <span class='hs-varop'>++</span> <a class=annot href="#"><span class=annottext>[GHC.Types.Char]</span><span class='hs-varid'>show</span></a> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-varid'>s</span></a></pre>
+</body>
+</html>

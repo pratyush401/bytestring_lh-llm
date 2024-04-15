@@ -1,0 +1,237 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<title>/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Builder/RealFloat/TableGenerator.hs</title>
+</head>
+<head>
+<link type='text/css' rel='stylesheet' href='liquid.css' />
+</head>
+
+<body>
+<hr>
+Put mouse over identifiers to see inferred types
+<pre><span class=hs-linenum>  1: </span><a class=annot href="#"><span class=annottext>GHC.Types.Module</span><span class='hs-comment'>{-# LANGUAGE ExplicitForAll #-}</span></a>
+<span class=hs-linenum>  2: </span><span class='hs-comment'>{-# LANGUAGE MultiParamTypeClasses #-}</span>
+<span class=hs-linenum>  3: </span><span class='hs-comment'>{-# LANGUAGE ScopedTypeVariables #-}</span>
+<span class=hs-linenum>  4: </span><span class='hs-comment'>{-# LANGUAGE BangPatterns, MagicHash, UnboxedTuples #-}</span>
+<span class=hs-linenum>  5: </span><span class='hs-comment'>-- |</span>
+<span class=hs-linenum>  6: </span><span class='hs-comment'>-- Module      : Data.ByteString.Builder.RealFloat.TableGenerator</span>
+<span class=hs-linenum>  7: </span><span class='hs-comment'>-- Copyright   : (c) Lawrence Wu 2021</span>
+<span class=hs-linenum>  8: </span><span class='hs-comment'>-- License     : BSD-style</span>
+<span class=hs-linenum>  9: </span><span class='hs-comment'>-- Maintainer  : lawrencejwu@gmail.com</span>
+<span class=hs-linenum> 10: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 11: </span><span class='hs-comment'>-- Constants and overview for compile-time table generation for Ryu internals</span>
+<span class=hs-linenum> 12: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 13: </span><span class='hs-comment'>-- This module uses Haskell's arbitrary-precision `Integer` types to compute</span>
+<span class=hs-linenum> 14: </span><span class='hs-comment'>-- the necessary multipliers for efficient conversion to a decimal power base.</span>
+<span class=hs-linenum> 15: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 16: </span><span class='hs-comment'>-- It also exposes constants relevant to the 32- and 64-bit tables (e.g maximum</span>
+<span class=hs-linenum> 17: </span><span class='hs-comment'>-- number of bits required to store the table values).</span>
+<span class=hs-linenum> 18: </span>
+<span class=hs-linenum> 19: </span><span class='hs-keyword'>module</span> <span class='hs-conid'>Data.ByteString.Builder.RealFloat.TableGenerator</span>
+<span class=hs-linenum> 20: </span>  <span class='hs-layout'>(</span> <span class='hs-varid'>float_pow5_inv_bitcount</span>
+<span class=hs-linenum> 21: </span>  <span class='hs-layout'>,</span> <span class='hs-varid'>float_pow5_bitcount</span>
+<span class=hs-linenum> 22: </span>  <span class='hs-layout'>,</span> <span class='hs-varid'>double_pow5_bitcount</span>
+<span class=hs-linenum> 23: </span>  <span class='hs-layout'>,</span> <span class='hs-varid'>double_pow5_inv_bitcount</span>
+<span class=hs-linenum> 24: </span>  <span class='hs-layout'>,</span> <span class='hs-varid'>float_max_split</span>
+<span class=hs-linenum> 25: </span>  <span class='hs-layout'>,</span> <span class='hs-varid'>float_max_inv_split</span>
+<span class=hs-linenum> 26: </span>  <span class='hs-layout'>,</span> <span class='hs-varid'>double_max_split</span>
+<span class=hs-linenum> 27: </span>  <span class='hs-layout'>,</span> <span class='hs-varid'>double_max_inv_split</span>
+<span class=hs-linenum> 28: </span>
+<span class=hs-linenum> 29: </span>  <span class='hs-layout'>,</span> <span class='hs-varid'>finv</span>
+<span class=hs-linenum> 30: </span>  <span class='hs-layout'>,</span> <span class='hs-varid'>fnorm</span>
+<span class=hs-linenum> 31: </span>  <span class='hs-layout'>,</span> <span class='hs-varid'>splitWord128s</span>
+<span class=hs-linenum> 32: </span>  <span class='hs-layout'>,</span> <span class='hs-varid'>case64</span>
+<span class=hs-linenum> 33: </span>  <span class='hs-layout'>,</span> <span class='hs-varid'>case128</span>
+<span class=hs-linenum> 34: </span>  <span class='hs-layout'>)</span> <span class='hs-keyword'>where</span>
+<span class=hs-linenum> 35: </span>
+<span class=hs-linenum> 36: </span><span class='hs-keyword'>import</span> <span class='hs-conid'>GHC.Float</span> <span class='hs-layout'>(</span><span class='hs-varid'>int2Double</span><span class='hs-layout'>)</span>
+<span class=hs-linenum> 37: </span>
+<span class=hs-linenum> 38: </span><span class='hs-keyword'>import</span> <span class='hs-conid'>Data.Bits</span>
+<span class=hs-linenum> 39: </span><span class='hs-keyword'>import</span> <span class='hs-conid'>Data.Word</span>
+<span class=hs-linenum> 40: </span><span class='hs-keyword'>import</span> <span class='hs-conid'>Numeric</span>
+<span class=hs-linenum> 41: </span>
+<span class=hs-linenum> 42: </span>
+<span class=hs-linenum> 43: </span><span class='hs-comment'>-- The basic floating point conversion algorithm is as such:</span>
+<span class=hs-linenum> 44: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 45: </span><span class='hs-comment'>-- Given floating point</span>
+<span class=hs-linenum> 46: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 47: </span><span class='hs-comment'>--   f = (-1)^s * m_f * 2^e_f</span>
+<span class=hs-linenum> 48: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 49: </span><span class='hs-comment'>-- which is IEEE encoded by `[s] [.. e ..] [.. m ..]`. `s` is the sign bit, `e`</span>
+<span class=hs-linenum> 50: </span><span class='hs-comment'>-- is the biased exponent, and `m` is the mantissa, let</span>
+<span class=hs-linenum> 51: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 52: </span><span class='hs-comment'>--       | e /= 0            | e == 0</span>
+<span class=hs-linenum> 53: </span><span class='hs-comment'>--  -----+-------------------+-----------</span>
+<span class=hs-linenum> 54: </span><span class='hs-comment'>--   m_f | 2^len(m) + m      | m</span>
+<span class=hs-linenum> 55: </span><span class='hs-comment'>--   e_f | e - bias - len(m) | 1 - bias - len(m)</span>
+<span class=hs-linenum> 56: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 57: </span><span class='hs-comment'>-- we compute the halfway points to the next smaller (`f-`) and larger (`f+`)</span>
+<span class=hs-linenum> 58: </span><span class='hs-comment'>-- floating point numbers as</span>
+<span class=hs-linenum> 59: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 60: </span><span class='hs-comment'>--  lower halfway point u * 2^e2, u = 4 * m_f - (if m == 0 then 1 else 2)</span>
+<span class=hs-linenum> 61: </span><span class='hs-comment'>--                      v * 2^e2, v = 4 * m_f</span>
+<span class=hs-linenum> 62: </span><span class='hs-comment'>--  upper halfway point w * 2^e2, u = 4 * m_f + 2</span>
+<span class=hs-linenum> 63: </span><span class='hs-comment'>--  where e2 = ef - 2 (so u, v, w are integers)</span>
+<span class=hs-linenum> 64: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 65: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 66: </span><span class='hs-comment'>-- Then we compute (a, b, c) * 10^e10 = (u, v, w) * 2^e2 which is split into</span>
+<span class=hs-linenum> 67: </span><span class='hs-comment'>-- the case of</span>
+<span class=hs-linenum> 68: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 69: </span><span class='hs-comment'>--   e2 &gt;= 0   ==&gt;    e10 = 0 , (a, b, c) = (u, v, w) * 2^e2</span>
+<span class=hs-linenum> 70: </span><span class='hs-comment'>--   e2 &lt;  0   ==&gt;    e10 = e2, (a, b, c) = (u, v, w) * 5^-e2</span>
+<span class=hs-linenum> 71: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 72: </span><span class='hs-comment'>-- And finally we find the shortest representation from integers d0 and e0 such</span>
+<span class=hs-linenum> 73: </span><span class='hs-comment'>-- that</span>
+<span class=hs-linenum> 74: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 75: </span><span class='hs-comment'>--  a * 10^e10 &lt; d0 * 10^(e0+e10) &lt; c * 10^e10</span>
+<span class=hs-linenum> 76: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 77: </span><span class='hs-comment'>-- such that e0 is maximal (we allow equality to smaller or larger halfway</span>
+<span class=hs-linenum> 78: </span><span class='hs-comment'>-- point depending on rounding mode). This is found through iteratively</span>
+<span class=hs-linenum> 79: </span><span class='hs-comment'>-- dividing by 10 while a/10^j &lt; c/10^j and doing some bookkeeping around</span>
+<span class=hs-linenum> 80: </span><span class='hs-comment'>-- zeros.</span>
+<span class=hs-linenum> 81: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 82: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 83: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 84: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 85: </span><span class='hs-comment'>-- The ryu algorithm removes the requirement for arbitrary precision arithmetic</span>
+<span class=hs-linenum> 86: </span><span class='hs-comment'>-- and improves the runtime significantly by skipping most of the iterative</span>
+<span class=hs-linenum> 87: </span><span class='hs-comment'>-- division by carefully selecting a point where certain invariants hold and</span>
+<span class=hs-linenum> 88: </span><span class='hs-comment'>-- precomputing a few tables.</span>
+<span class=hs-linenum> 89: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 90: </span><span class='hs-comment'>-- Specifically, define `q` such that the correspondings values of a/10^q &lt;</span>
+<span class=hs-linenum> 91: </span><span class='hs-comment'>-- c/10^q - 1. We can prove (not shown) that</span>
+<span class=hs-linenum> 92: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 93: </span><span class='hs-comment'>--    if e2 &gt;= 0, q = e2 * log_10(2)</span>
+<span class=hs-linenum> 94: </span><span class='hs-comment'>--    if e2 &lt;  0, q = -e2 * log_10(5)</span>
+<span class=hs-linenum> 95: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 96: </span><span class='hs-comment'>-- Then we can compute (a, b, c) / 10^q. Starting from (u, v, w) we have</span>
+<span class=hs-linenum> 97: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 98: </span><span class='hs-comment'>--      (a, b, c) / 10^q                  (a, b, c) / 10^q</span>
+<span class=hs-linenum> 99: </span><span class='hs-comment'>--    = (u, v, w) * 2^e2 / 10^q    OR   = (u, v, w) * 5^-e2 / 10^q</span>
+<span class=hs-linenum>100: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum>101: </span><span class='hs-comment'>-- And since q &lt; e2,</span>
+<span class=hs-linenum>102: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum>103: </span><span class='hs-comment'>--    = (u, v, w) * 2^e2-q / 5^q   OR   = (u, v, w) * 5^-e2-q / 2^q</span>
+<span class=hs-linenum>104: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum>105: </span><span class='hs-comment'>-- While (u, v, w) are n-bit numbers, 5^q and whatnot are significantly larger,</span>
+<span class=hs-linenum>106: </span><span class='hs-comment'>-- but we only need the top-most n bits of the result so we can choose `k` that</span>
+<span class=hs-linenum>107: </span><span class='hs-comment'>-- reduce the number of bits required to ~2n. We then multiply by either</span>
+<span class=hs-linenum>108: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum>109: </span><span class='hs-comment'>--    2^k / 5^q                    OR   5^-e2-q / 2^k</span>
+<span class=hs-linenum>110: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum>111: </span><span class='hs-comment'>-- The required `k` is roughly linear in the exponent (we need more of the</span>
+<span class=hs-linenum>112: </span><span class='hs-comment'>-- multiplication to be precise) but the number of bits to store the</span>
+<span class=hs-linenum>113: </span><span class='hs-comment'>-- multiplicands above stays fixed.</span>
+<span class=hs-linenum>114: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum>115: </span><span class='hs-comment'>-- Since the number of bits needed is relatively small for IEEE 32- and 64-bit</span>
+<span class=hs-linenum>116: </span><span class='hs-comment'>-- floating types, we can compute appropriate values for `k` for the</span>
+<span class=hs-linenum>117: </span><span class='hs-comment'>-- floating-point-type-specific bounds instead of each e2.</span>
+<span class=hs-linenum>118: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum>119: </span><span class='hs-comment'>-- Finally, we need to do some final manual iterations potentially to do a</span>
+<span class=hs-linenum>120: </span><span class='hs-comment'>-- final fixup of the skipped state</span>
+<span class=hs-linenum>121: </span>
+<span class=hs-linenum>122: </span>
+<span class=hs-linenum>123: </span><span class='hs-comment'>-- | Bound for bits of @2^k / 5^q@ for floats</span>
+<span class=hs-linenum>124: </span><span class='hs-definition'>float_pow5_inv_bitcount</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Int</span>
+<span class=hs-linenum>125: </span><a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-definition'>float_pow5_inv_bitcount</span></a> <span class='hs-keyglyph'>=</span> <span class='hs-num'>59</span>
+<span class=hs-linenum>126: </span>
+<span class=hs-linenum>127: </span><span class='hs-comment'>-- | Bound for bits of @5^-e2-q / 2^k@ for floats</span>
+<span class=hs-linenum>128: </span><span class='hs-definition'>float_pow5_bitcount</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Int</span>
+<span class=hs-linenum>129: </span><a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-definition'>float_pow5_bitcount</span></a> <span class='hs-keyglyph'>=</span> <span class='hs-num'>61</span>
+<span class=hs-linenum>130: </span>
+<span class=hs-linenum>131: </span><span class='hs-comment'>-- | Bound for bits of @5^-e2-q / 2^k@ for doubles</span>
+<span class=hs-linenum>132: </span><span class='hs-definition'>double_pow5_bitcount</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Int</span>
+<span class=hs-linenum>133: </span><a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-definition'>double_pow5_bitcount</span></a> <span class='hs-keyglyph'>=</span> <span class='hs-num'>125</span>
+<span class=hs-linenum>134: </span>
+<span class=hs-linenum>135: </span><span class='hs-comment'>-- | Bound for bits of @2^k / 5^q@ for doubles</span>
+<span class=hs-linenum>136: </span><span class='hs-definition'>double_pow5_inv_bitcount</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Int</span>
+<span class=hs-linenum>137: </span><a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-definition'>double_pow5_inv_bitcount</span></a> <span class='hs-keyglyph'>=</span> <span class='hs-num'>125</span>
+<span class=hs-linenum>138: </span>
+<span class=hs-linenum>139: </span><span class='hs-comment'>-- NB: these tables are encoded directly into the</span>
+<span class=hs-linenum>140: </span><span class='hs-comment'>-- source code in cbits/aligned-static-hs-data.c</span>
+<span class=hs-linenum>141: </span>
+<span class=hs-linenum>142: </span><span class='hs-comment'>-- | Number of bits in a positive integer</span>
+<span class=hs-linenum>143: </span><span class='hs-definition'>blen</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Integer</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Int</span>
+<span class=hs-linenum>144: </span><a class=annot href="#"><span class=annottext>{VV : GHC.Num.Integer.Integer | false} -&gt; {VV : GHC.Types.Int | false}</span><span class='hs-definition'>blen</span></a> <span class='hs-num'>0</span> <span class='hs-keyglyph'>=</span> <a class=annot href="#"><span class=annottext>{v : GHC.Prim.Int# | v == 0}</span><span class='hs-num'>0</span></a>
+<span class=hs-linenum>145: </span><span class='hs-definition'>blen</span> <span class='hs-num'>1</span> <span class='hs-keyglyph'>=</span> <a class=annot href="#"><span class=annottext>{v : GHC.Prim.Int# | v == 1}</span><span class='hs-num'>1</span></a>
+<span class=hs-linenum>146: </span><span class='hs-definition'>blen</span> <span class='hs-varid'>n</span> <span class='hs-keyglyph'>=</span> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-num'>1</span></a> <span class='hs-varop'>+</span> <a class=annot href="#"><span class=annottext>{VV : GHC.Types.Int | false}</span><span class='hs-varid'>blen</span></a> <a class=annot href="#"><span class=annottext>GHC.Num.Integer.Integer</span><span class='hs-layout'>(</span></a><a class=annot href="#"><span class=annottext>{v : GHC.Num.Integer.Integer | false}</span><span class='hs-varid'>n</span></a> <span class='hs-varop'>`quot`</span> <a class=annot href="#"><span class=annottext>{v : GHC.Num.Integer.Integer | v == 2}</span><span class='hs-num'>2</span></a><span class='hs-layout'>)</span>
+<span class=hs-linenum>147: </span>
+<span class=hs-linenum>148: </span><span class='hs-comment'>-- | Used for table generation of 2^k / 5^q + 1</span>
+<span class=hs-linenum>149: </span><span class='hs-definition'>finv</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Int</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Int</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Integer</span>
+<span class=hs-linenum>150: </span><a class=annot href="#"><span class=annottext>GHC.Types.Int -&gt; GHC.Types.Int -&gt; GHC.Num.Integer.Integer</span><span class='hs-definition'>finv</span></a> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-varid'>bitcount</span></a> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-varid'>i</span></a> <span class='hs-keyglyph'>=</span>
+<span class=hs-linenum>151: </span>  <span class='hs-keyword'>let</span> <a class=annot href="#"><span class=annottext>{v : GHC.Num.Integer.Integer | i == 0 =&gt; v == 1}</span><span class='hs-varid'>p</span></a> <span class='hs-keyglyph'>=</span> <a class=annot href="#"><span class=annottext>{v : GHC.Num.Integer.Integer | v == 5}</span><span class='hs-num'>5</span></a><span class='hs-varop'>^</span><a class=annot href="#"><span class=annottext>{v : GHC.Types.Int | v == i}</span><span class='hs-varid'>i</span></a>
+<span class=hs-linenum>152: </span>   <span class='hs-keyword'>in</span> <a class=annot href="#"><span class=annottext>GHC.Num.Integer.Integer</span><span class='hs-layout'>(</span></a><a class=annot href="#"><span class=annottext>{v : GHC.Num.Integer.Integer | v == 1}</span><span class='hs-num'>1</span></a> <span class='hs-varop'>`shiftL`</span> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-layout'>(</span></a><a class=annot href="#"><span class=annottext>{v : GHC.Types.Int | false}</span><span class='hs-varid'>blen</span></a> <a class=annot href="#"><span class=annottext>{v : GHC.Num.Integer.Integer | (i == 0 =&gt; v == 1)
+                               &amp;&amp; v == p}</span><span class='hs-varid'>p</span></a> <span class='hs-comment'>-</span> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-num'>1</span></a> <span class='hs-varop'>+</span> <a class=annot href="#"><span class=annottext>{v : GHC.Types.Int | v == bitcount}</span><span class='hs-varid'>bitcount</span></a><span class='hs-layout'>)</span><span class='hs-layout'>)</span> <span class='hs-varop'>`div`</span> <a class=annot href="#"><span class=annottext>{v : GHC.Num.Integer.Integer | (i == 0 =&gt; v == 1)
+                               &amp;&amp; v == p}</span><span class='hs-varid'>p</span></a> <span class='hs-varop'>+</span> <a class=annot href="#"><span class=annottext>{v : GHC.Num.Integer.Integer | v == 1}</span><span class='hs-num'>1</span></a>
+<span class=hs-linenum>153: </span>
+<span class=hs-linenum>154: </span><span class='hs-comment'>-- | Used for table generation of 5^-e2-q / 2^k</span>
+<span class=hs-linenum>155: </span><span class='hs-definition'>fnorm</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Int</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Int</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Integer</span>
+<span class=hs-linenum>156: </span><a class=annot href="#"><span class=annottext>GHC.Types.Int -&gt; GHC.Types.Int -&gt; GHC.Num.Integer.Integer</span><span class='hs-definition'>fnorm</span></a> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-varid'>bitcount</span></a> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-varid'>i</span></a> <span class='hs-keyglyph'>=</span>
+<span class=hs-linenum>157: </span>  <span class='hs-keyword'>let</span> <a class=annot href="#"><span class=annottext>{v : GHC.Num.Integer.Integer | i == 0 =&gt; v == 1}</span><span class='hs-varid'>p</span></a> <span class='hs-keyglyph'>=</span> <a class=annot href="#"><span class=annottext>{v : GHC.Num.Integer.Integer | v == 5}</span><span class='hs-num'>5</span></a><span class='hs-varop'>^</span><a class=annot href="#"><span class=annottext>{v : GHC.Types.Int | v == i}</span><span class='hs-varid'>i</span></a>
+<span class=hs-linenum>158: </span>      <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-varid'>s</span></a> <span class='hs-keyglyph'>=</span> <a class=annot href="#"><span class=annottext>{v : GHC.Types.Int | false}</span><span class='hs-varid'>blen</span></a> <a class=annot href="#"><span class=annottext>{v : GHC.Num.Integer.Integer | (i == 0 =&gt; v == 1)
+                               &amp;&amp; v == p}</span><span class='hs-varid'>p</span></a> <span class='hs-comment'>-</span> <a class=annot href="#"><span class=annottext>{v : GHC.Types.Int | v == bitcount}</span><span class='hs-varid'>bitcount</span></a>
+<span class=hs-linenum>159: </span>   <span class='hs-keyword'>in</span> <span class='hs-keyword'>if</span> <a class=annot href="#"><span class=annottext>{v : GHC.Types.Int | v == s}</span><span class='hs-varid'>s</span></a> <span class='hs-varop'>&lt;</span> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-num'>0</span></a> <span class='hs-keyword'>then</span> <a class=annot href="#"><span class=annottext>{v : GHC.Num.Integer.Integer | (i == 0 =&gt; v == 1)
+                               &amp;&amp; v == p}</span><span class='hs-varid'>p</span></a> <span class='hs-varop'>`shiftL`</span> <a class=annot href="#"><span class=annottext>{v : GHC.Types.Int | v == (-s)}</span><span class='hs-layout'>(</span></a><span class='hs-comment'>-</span><a class=annot href="#"><span class=annottext>{v : GHC.Types.Int | v == s}</span><span class='hs-varid'>s</span></a><span class='hs-layout'>)</span> <span class='hs-keyword'>else</span> <a class=annot href="#"><span class=annottext>{v : GHC.Num.Integer.Integer | (i == 0 =&gt; v == 1)
+                               &amp;&amp; v == p}</span><span class='hs-varid'>p</span></a> <span class='hs-varop'>`shiftR`</span> <a class=annot href="#"><span class=annottext>{v : GHC.Types.Int | v == s}</span><span class='hs-varid'>s</span></a>
+<span class=hs-linenum>160: </span>
+<span class=hs-linenum>161: </span><span class='hs-comment'>-- | Breaks each integer into two Word64s (lowBits, highBits)</span>
+<span class=hs-linenum>162: </span><span class='hs-definition'>splitWord128s</span> <span class='hs-keyglyph'>::</span> <span class='hs-keyglyph'>[</span><span class='hs-conid'>Integer</span><span class='hs-keyglyph'>]</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-keyglyph'>[</span><span class='hs-conid'>Word64</span><span class='hs-keyglyph'>]</span>
+<span class=hs-linenum>163: </span><a class=annot href="#"><span class=annottext>[GHC.Num.Integer.Integer] -&gt; [GHC.Word.Word64]</span><span class='hs-definition'>splitWord128s</span></a> <a class=annot href="#"><span class=annottext>[GHC.Num.Integer.Integer]</span><span class='hs-varid'>li</span></a>
+<span class=hs-linenum>164: </span>  <span class='hs-keyglyph'>=</span> <a class=annot href="#"><span class=annottext>[GHC.Word.Word64]</span><span class='hs-keyglyph'>[</span></a><a class=annot href="#"><span class=annottext>GHC.Word.Word64</span><span class='hs-varid'>fromInteger</span></a> <a class=annot href="#"><span class=annottext>GHC.Num.Integer.Integer</span><span class='hs-varid'>w</span></a> <span class='hs-keyglyph'>|</span> <span class='hs-varid'>x</span> <span class='hs-keyglyph'>&lt;-</span> <a class=annot href="#"><span class=annottext>{v : [GHC.Num.Integer.Integer] | v == li
+                                 &amp;&amp; len v &gt;= 0}</span><span class='hs-varid'>li</span></a><span class='hs-layout'>,</span> <span class='hs-varid'>w</span> <span class='hs-keyglyph'>&lt;-</span> <a class=annot href="#"><span class=annottext>[GHC.Num.Integer.Integer]</span><span class='hs-keyglyph'>[</span></a><a class=annot href="#"><span class=annottext>GHC.Num.Integer.Integer</span><span class='hs-varid'>x</span></a> <span class='hs-varop'>.&amp;.</span> <a class=annot href="#"><span class=annottext>{v : GHC.Num.Integer.Integer | v == maxWord64}</span><span class='hs-varid'>maxWord64</span></a><span class='hs-layout'>,</span> <a class=annot href="#"><span class=annottext>GHC.Num.Integer.Integer</span><span class='hs-varid'>x</span></a> <span class='hs-varop'>`shiftR`</span> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-num'>64</span></a><span class='hs-keyglyph'>]</span><span class='hs-keyglyph'>]</span>
+<span class=hs-linenum>165: </span>  <span class='hs-keyword'>where</span>  <a class=annot href="#"><span class=annottext>GHC.Num.Integer.Integer</span><span class='hs-varid'>maxWord64</span></a> <span class='hs-keyglyph'>=</span> <a class=annot href="#"><span class=annottext>GHC.Num.Integer.Integer</span><span class='hs-varid'>toInteger</span></a> <a class=annot href="#"><span class=annottext>GHC.Word.Word64</span><span class='hs-layout'>(</span></a><span class='hs-varid'>maxBound</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Word64</span><span class='hs-layout'>)</span>
+<span class=hs-linenum>166: </span>
+<span class=hs-linenum>167: </span><span class='hs-definition'>splitWord128</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Integer</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-layout'>(</span><span class='hs-conid'>Word64</span><span class='hs-layout'>,</span><span class='hs-conid'>Word64</span><span class='hs-layout'>)</span>
+<span class=hs-linenum>168: </span><a class=annot href="#"><span class=annottext>GHC.Num.Integer.Integer -&gt; (GHC.Word.Word64, GHC.Word.Word64)</span><span class='hs-definition'>splitWord128</span></a> <a class=annot href="#"><span class=annottext>GHC.Num.Integer.Integer</span><span class='hs-varid'>x</span></a> <span class='hs-keyglyph'>=</span> <a class=annot href="#"><span class=annottext>{VV : forall a b &lt;p2 :: a b -&gt; Bool&gt;.
+      x1:a -&gt; x2:{VV : b&lt;p2 x1&gt; | true} -&gt; {v : (a, b)&lt;\x5 VV -&gt; {VV : b&lt;p2 x5&gt; | true}&gt; | fst v == x1
+                                                                                           &amp;&amp; snd v == x2
+                                                                                           &amp;&amp; x_Tuple21 v == x1
+                                                                                           &amp;&amp; x_Tuple22 v == x2} | VV == (,)}</span><span class='hs-layout'>(</span></a><a class=annot href="#"><span class=annottext>GHC.Word.Word64</span><span class='hs-varid'>fromInteger</span></a> <a class=annot href="#"><span class=annottext>GHC.Num.Integer.Integer</span><span class='hs-layout'>(</span></a><a class=annot href="#"><span class=annottext>{v : GHC.Num.Integer.Integer | v == x}</span><span class='hs-varid'>x</span></a> <span class='hs-varop'>`shiftR`</span> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-num'>64</span></a><span class='hs-layout'>)</span><span class='hs-layout'>,</span> <a class=annot href="#"><span class=annottext>GHC.Word.Word64</span><span class='hs-varid'>fromInteger</span></a> <a class=annot href="#"><span class=annottext>GHC.Num.Integer.Integer</span><span class='hs-layout'>(</span></a><a class=annot href="#"><span class=annottext>{v : GHC.Num.Integer.Integer | v == x}</span><span class='hs-varid'>x</span></a> <span class='hs-varop'>.&amp;.</span> <a class=annot href="#"><span class=annottext>{v : GHC.Num.Integer.Integer | v == maxWord64}</span><span class='hs-varid'>maxWord64</span></a><span class='hs-layout'>)</span><span class='hs-layout'>)</span>
+<span class=hs-linenum>169: </span>  <span class='hs-keyword'>where</span>  <a class=annot href="#"><span class=annottext>GHC.Num.Integer.Integer</span><span class='hs-varid'>maxWord64</span></a> <span class='hs-keyglyph'>=</span> <a class=annot href="#"><span class=annottext>GHC.Num.Integer.Integer</span><span class='hs-varid'>toInteger</span></a> <a class=annot href="#"><span class=annottext>GHC.Word.Word64</span><span class='hs-layout'>(</span></a><span class='hs-varid'>maxBound</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Word64</span><span class='hs-layout'>)</span>
+<span class=hs-linenum>170: </span>
+<span class=hs-linenum>171: </span>
+<span class=hs-linenum>172: </span><span class='hs-comment'>-- Helpers to generate case alternatives returning either one Word64 (case64) or</span>
+<span class=hs-linenum>173: </span><span class='hs-comment'>-- two Word64s (case128) for the PURE_HASKELL variant of the tables.</span>
+<span class=hs-linenum>174: </span><span class='hs-definition'>case64</span> <span class='hs-keyglyph'>::</span> <span class='hs-layout'>(</span><span class='hs-conid'>Int</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Integer</span><span class='hs-layout'>)</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-keyglyph'>[</span><span class='hs-conid'>Int</span><span class='hs-keyglyph'>]</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>String</span>
+<span class=hs-linenum>175: </span><a class=annot href="#"><span class=annottext>(GHC.Types.Int -&gt; GHC.Num.Integer.Integer) -&gt; [GHC.Types.Int] -&gt; [GHC.Types.Char]</span><span class='hs-definition'>case64</span></a> <a class=annot href="#"><span class=annottext>GHC.Types.Int -&gt; GHC.Num.Integer.Integer</span><span class='hs-varid'>f</span></a> <a class=annot href="#"><span class=annottext>[GHC.Types.Int]</span><span class='hs-varid'>range</span></a> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>concat</span>
+<span class=hs-linenum>176: </span>  <span class='hs-keyglyph'>[</span> <a class=annot href="#"><span class=annottext>[GHC.Types.Char]</span><span class='hs-varid'>show</span></a> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-varid'>i</span></a> <span class='hs-varop'>++</span> <a class=annot href="#"><span class=annottext>[GHC.Types.Char]</span><span class='hs-str'>" -&gt; 0x"</span></a> <span class='hs-varop'>++</span> <a class=annot href="#"><span class=annottext>[GHC.Types.Char]</span><span class='hs-varid'>showHex</span></a> <a class=annot href="#"><span class=annottext>GHC.Num.Integer.Integer</span><span class='hs-layout'>(</span></a><span class='hs-varid'>f</span> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-varid'>i</span></a><span class='hs-layout'>)</span> <a class=annot href="#"><span class=annottext>[GHC.Types.Char]</span><span class='hs-str'>"\n"</span></a>
+<span class=hs-linenum>177: </span>  <span class='hs-keyglyph'>|</span> <span class='hs-varid'>i</span> <span class='hs-keyglyph'>&lt;-</span> <a class=annot href="#"><span class=annottext>{v : [GHC.Types.Int] | v == range
+                       &amp;&amp; len v &gt;= 0}</span><span class='hs-varid'>range</span></a><span class='hs-keyglyph'>]</span>
+<span class=hs-linenum>178: </span>
+<span class=hs-linenum>179: </span><span class='hs-definition'>case128</span> <span class='hs-keyglyph'>::</span> <span class='hs-layout'>(</span><span class='hs-conid'>Int</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Integer</span><span class='hs-layout'>)</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-keyglyph'>[</span><span class='hs-conid'>Int</span><span class='hs-keyglyph'>]</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>String</span>
+<span class=hs-linenum>180: </span><a class=annot href="#"><span class=annottext>(GHC.Types.Int -&gt; GHC.Num.Integer.Integer) -&gt; [GHC.Types.Int] -&gt; [GHC.Types.Char]</span><span class='hs-definition'>case128</span></a> <a class=annot href="#"><span class=annottext>GHC.Types.Int -&gt; GHC.Num.Integer.Integer</span><span class='hs-varid'>f</span></a> <a class=annot href="#"><span class=annottext>[GHC.Types.Int]</span><span class='hs-varid'>range</span></a> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>concat</span>
+<span class=hs-linenum>181: </span>  <span class='hs-keyglyph'>[</span> <a class=annot href="#"><span class=annottext>[GHC.Types.Char]</span><span class='hs-varid'>show</span></a> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-varid'>i</span></a> <span class='hs-varop'>++</span> <a class=annot href="#"><span class=annottext>[GHC.Types.Char]</span><span class='hs-str'>" -&gt; (0x"</span></a> <span class='hs-varop'>++</span> <a class=annot href="#"><span class=annottext>[GHC.Types.Char]</span><span class='hs-varid'>showHex</span></a> <a class=annot href="#"><span class=annottext>GHC.Word.Word64</span><span class='hs-varid'>hi</span></a> <a class=annot href="#"><span class=annottext>{VV : forall a &lt;p :: a a -&gt; Bool&gt;.
+      {v : [a]&lt;\x3 VV -&gt; {VV : a&lt;p x3&gt; | true}&gt; | len v == 0} | VV == []}</span><span class='hs-str'>""</span></a> <span class='hs-varop'>++</span> <a class=annot href="#"><span class=annottext>[GHC.Types.Char]</span><span class='hs-str'>", 0x"</span></a> <span class='hs-varop'>++</span> <a class=annot href="#"><span class=annottext>[GHC.Types.Char]</span><span class='hs-varid'>showHex</span></a> <a class=annot href="#"><span class=annottext>GHC.Word.Word64</span><span class='hs-varid'>lo</span></a> <a class=annot href="#"><span class=annottext>[GHC.Types.Char]</span><span class='hs-str'>")\n"</span></a>
+<span class=hs-linenum>182: </span>  <span class='hs-keyglyph'>|</span> <span class='hs-varid'>i</span> <span class='hs-keyglyph'>&lt;-</span> <a class=annot href="#"><span class=annottext>{v : [GHC.Types.Int] | v == range
+                       &amp;&amp; len v &gt;= 0}</span><span class='hs-varid'>range</span></a>
+<span class=hs-linenum>183: </span>  <span class='hs-layout'>,</span> <span class='hs-keyword'>let</span> <span class='hs-layout'>(</span><span class='hs-varid'>hi</span><span class='hs-layout'>,</span><span class='hs-varid'>lo</span><span class='hs-layout'>)</span> <span class='hs-keyglyph'>=</span> <a class=annot href="#"><span class=annottext>(GHC.Word.Word64, GHC.Word.Word64)</span><span class='hs-varid'>splitWord128</span></a> <a class=annot href="#"><span class=annottext>GHC.Num.Integer.Integer</span><span class='hs-layout'>(</span></a><span class='hs-varid'>f</span> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-varid'>i</span></a><span class='hs-layout'>)</span>
+<span class=hs-linenum>184: </span>  <span class='hs-keyglyph'>]</span>
+<span class=hs-linenum>185: </span>
+<span class=hs-linenum>186: </span><span class='hs-comment'>-- Given a specific floating-point type, determine the range of q for the &lt; 0</span>
+<span class=hs-linenum>187: </span><span class='hs-comment'>-- and &gt;= 0 cases</span>
+<span class=hs-linenum>188: </span><span class='hs-definition'>get_range</span> <span class='hs-keyglyph'>::</span> <span class='hs-keyword'>forall</span> <span class='hs-varid'>ff</span><span class='hs-varop'>.</span> <span class='hs-layout'>(</span><span class='hs-conid'>RealFloat</span> <span class='hs-varid'>ff</span><span class='hs-layout'>)</span> <span class='hs-keyglyph'>=&gt;</span> <span class='hs-varid'>ff</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-layout'>(</span><span class='hs-conid'>Int</span><span class='hs-layout'>,</span> <span class='hs-conid'>Int</span><span class='hs-layout'>)</span>
+<span class=hs-linenum>189: </span><a class=annot href="#"><span class=annottext>forall a .
+(GHC.Float.RealFloat&lt;[]&gt; a) =&gt;
+{VV : a | false} -&gt; {VV : ({VV : GHC.Types.Int | false}, {VV : GHC.Types.Int | false})&lt;\_ VV -&gt; {VV : GHC.Types.Int | false}&gt; | false}</span><span class='hs-definition'>get_range</span></a> <a class=annot href="#"><span class=annottext>{VV : a | false}</span><span class='hs-varid'>f</span></a> <span class='hs-keyglyph'>=</span>
+<span class=hs-linenum>190: </span>  <span class='hs-keyword'>let</span> <span class='hs-layout'>(</span><a class=annot href="#"><span class=annottext>{VV : GHC.Types.Int | false}</span><span class='hs-varid'>emin</span></a><span class='hs-layout'>,</span> <a class=annot href="#"><span class=annottext>{VV : GHC.Types.Int | false}</span><span class='hs-varid'>emax</span></a><span class='hs-layout'>)</span> <span class='hs-keyglyph'>=</span> <a class=annot href="#"><span class=annottext>(GHC.Types.Int, GHC.Types.Int)</span><span class='hs-varid'>floatRange</span></a> <a class=annot href="#"><span class=annottext>{VV : a | false}</span><span class='hs-varid'>f</span></a>
+<span class=hs-linenum>191: </span>      <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-varid'>mantissaDigits</span></a> <span class='hs-keyglyph'>=</span> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-varid'>floatDigits</span></a> <a class=annot href="#"><span class=annottext>{VV : a | false}</span><span class='hs-varid'>f</span></a>
+<span class=hs-linenum>192: </span>      <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-varid'>emin'</span></a> <span class='hs-keyglyph'>=</span> <a class=annot href="#"><span class=annottext>{v : GHC.Types.Int | false}</span><span class='hs-varid'>emin</span></a> <span class='hs-comment'>-</span> <a class=annot href="#"><span class=annottext>{v : GHC.Types.Int | v == mantissaDigits}</span><span class='hs-varid'>mantissaDigits</span></a> <span class='hs-comment'>-</span> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-num'>2</span></a>
+<span class=hs-linenum>193: </span>      <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-varid'>emax'</span></a> <span class='hs-keyglyph'>=</span> <a class=annot href="#"><span class=annottext>{v : GHC.Types.Int | false}</span><span class='hs-varid'>emax</span></a> <span class='hs-comment'>-</span> <a class=annot href="#"><span class=annottext>{v : GHC.Types.Int | v == mantissaDigits}</span><span class='hs-varid'>mantissaDigits</span></a> <span class='hs-comment'>-</span> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-num'>2</span></a>
+<span class=hs-linenum>194: </span>   <span class='hs-keyword'>in</span> <span class='hs-layout'>(</span> <a class=annot href="#"><span class=annottext>{v : GHC.Types.Int | v == (-emin')}</span><span class='hs-layout'>(</span></a><span class='hs-comment'>-</span><a class=annot href="#"><span class=annottext>{v : GHC.Types.Int | v == emin'}</span><span class='hs-varid'>emin'</span></a><span class='hs-layout'>)</span> <span class='hs-comment'>-</span> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-varid'>floor</span></a> <a class=annot href="#"><span class=annottext>GHC.Types.Double</span><span class='hs-layout'>(</span></a><a class=annot href="#"><span class=annottext>GHC.Types.Double</span><span class='hs-varid'>int2Double</span></a> <a class=annot href="#"><span class=annottext>{v : GHC.Types.Int | v == (-emin')}</span><span class='hs-layout'>(</span></a><span class='hs-comment'>-</span><a class=annot href="#"><span class=annottext>{v : GHC.Types.Int | v == emin'}</span><span class='hs-varid'>emin'</span></a><span class='hs-layout'>)</span> <span class='hs-varop'>*</span> <a class=annot href="#"><span class=annottext>GHC.Types.Double</span><span class='hs-varid'>logBase</span></a> <a class=annot href="#"><span class=annottext>{v : GHC.Types.Double | v == (10.0 : real)}</span><span class='hs-num'>10</span></a> <a class=annot href="#"><span class=annottext>{v : GHC.Types.Double | v == (5.0 : real)}</span><span class='hs-num'>5</span></a><span class='hs-layout'>)</span>
+<span class=hs-linenum>195: </span>      <span class='hs-layout'>,</span> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-varid'>floor</span></a> <a class=annot href="#"><span class=annottext>GHC.Types.Double</span><span class='hs-layout'>(</span></a><a class=annot href="#"><span class=annottext>GHC.Types.Double</span><span class='hs-varid'>int2Double</span></a> <a class=annot href="#"><span class=annottext>{v : GHC.Types.Int | v == emax'}</span><span class='hs-varid'>emax'</span></a> <span class='hs-varop'>*</span> <a class=annot href="#"><span class=annottext>GHC.Types.Double</span><span class='hs-varid'>logBase</span></a> <a class=annot href="#"><span class=annottext>{v : GHC.Types.Double | v == (10.0 : real)}</span><span class='hs-num'>10</span></a> <a class=annot href="#"><span class=annottext>{v : GHC.Types.Double | v == (2.0 : real)}</span><span class='hs-num'>2</span></a><span class='hs-layout'>)</span><span class='hs-layout'>)</span>
+<span class=hs-linenum>196: </span>
+<span class=hs-linenum>197: </span><span class='hs-definition'>float_max_split</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Int</span>     <span class='hs-comment'>-- = 46</span>
+<span class=hs-linenum>198: </span><span class='hs-definition'>float_max_inv_split</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Int</span> <span class='hs-comment'>-- = 30</span>
+<span class=hs-linenum>199: </span><span class='hs-layout'>(</span><a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-varid'>float_max_split</span></a><span class='hs-layout'>,</span> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-varid'>float_max_inv_split</span></a><span class='hs-layout'>)</span> <span class='hs-keyglyph'>=</span> <a class=annot href="#"><span class=annottext>{v : (GHC.Float.RealFloat GHC.Types.Float) | v == $fRealFloatFloat}</span><span class='hs-varid'>get_range</span></a> <a class=annot href="#"><span class=annottext>{v : GHC.Types.Float | false}</span><span class='hs-layout'>(</span></a><span class='hs-varid'>undefined</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Float</span><span class='hs-layout'>)</span>
+<span class=hs-linenum>200: </span>
+<span class=hs-linenum>201: </span><span class='hs-comment'>-- we take a slightly different codepath s.t we need one extra entry</span>
+<span class=hs-linenum>202: </span><span class='hs-definition'>double_max_split</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Int</span>     <span class='hs-comment'>-- = 325</span>
+<span class=hs-linenum>203: </span><span class='hs-definition'>double_max_inv_split</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Int</span> <span class='hs-comment'>-- = 291</span>
+<span class=hs-linenum>204: </span><span class='hs-layout'>(</span><a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-varid'>double_max_split</span></a><span class='hs-layout'>,</span> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-varid'>double_max_inv_split</span></a><span class='hs-layout'>)</span> <span class='hs-keyglyph'>=</span>
+<span class=hs-linenum>205: </span>    <span class='hs-keyword'>let</span> <span class='hs-layout'>(</span><a class=annot href="#"><span class=annottext>{VV : GHC.Types.Int | false}</span><span class='hs-varid'>m</span></a><span class='hs-layout'>,</span> <a class=annot href="#"><span class=annottext>{VV : GHC.Types.Int | false}</span><span class='hs-varid'>mi</span></a><span class='hs-layout'>)</span> <span class='hs-keyglyph'>=</span> <a class=annot href="#"><span class=annottext>{v : ({v : GHC.Types.Int | false}, {v : GHC.Types.Int | false})&lt;\_ VV -&gt; {v : GHC.Types.Int | false}&gt; | false}</span><span class='hs-varid'>get_range</span></a> <a class=annot href="#"><span class=annottext>{v : GHC.Types.Double | false}</span><span class='hs-layout'>(</span></a><span class='hs-varid'>undefined</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Double</span><span class='hs-layout'>)</span>
+<span class=hs-linenum>206: </span>     <span class='hs-keyword'>in</span> <span class='hs-layout'>(</span><a class=annot href="#"><span class=annottext>{v : GHC.Types.Int | false}</span><span class='hs-varid'>m</span></a> <span class='hs-varop'>+</span> <a class=annot href="#"><span class=annottext>GHC.Types.Int</span><span class='hs-num'>1</span></a><span class='hs-layout'>,</span> <a class=annot href="#"><span class=annottext>{v : GHC.Types.Int | false}</span><span class='hs-varid'>mi</span></a><span class='hs-layout'>)</span>
+<span class=hs-linenum>207: </span>
+</pre>
+</body>
+</html>

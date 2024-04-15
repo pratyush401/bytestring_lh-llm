@@ -1,0 +1,7 @@
+1:1-1:1::Data.ByteString.Utils.UnalignedAccess.$trModule :: "GHC.Types.Module"
+96:1-96:18::Data.ByteString.Utils.UnalignedAccess.unalignedWriteU16 :: "GHC.Word.Word16 -> (GHC.Ptr.Ptr GHC.Word.Word8) -> (GHC.Types.IO ())"
+99:1-99:18::Data.ByteString.Utils.UnalignedAccess.unalignedWriteU32 :: "GHC.Word.Word32 -> (GHC.Ptr.Ptr GHC.Word.Word8) -> (GHC.Types.IO ())"
+102:1-102:18::Data.ByteString.Utils.UnalignedAccess.unalignedWriteU64 :: "GHC.Word.Word64 -> (GHC.Ptr.Ptr GHC.Word.Word8) -> (GHC.Types.IO ())"
+105:1-105:20::Data.ByteString.Utils.UnalignedAccess.unalignedWriteFloat :: "GHC.Types.Float -> (GHC.Ptr.Ptr GHC.Word.Word8) -> (GHC.Types.IO ())"
+108:1-108:21::Data.ByteString.Utils.UnalignedAccess.unalignedWriteDouble :: "GHC.Types.Double -> (GHC.Ptr.Ptr GHC.Word.Word8) -> (GHC.Types.IO ())"
+111:1-111:17::Data.ByteString.Utils.UnalignedAccess.unalignedReadU64 :: "(GHC.Ptr.Ptr GHC.Word.Word8) -> (GHC.Types.IO GHC.Word.Word64)"
