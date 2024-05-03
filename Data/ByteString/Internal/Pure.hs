@@ -42,7 +42,8 @@ import GHC.Int                  (Int8(..))
 
 import Data.Bits                (Bits(..), shiftR, (.&.))
 import Data.Word
-import Foreign.Ptr              (plusPtr, nullPtr)
+-- import Foreign.Ptr              (plusPtr, nullPtr)
+import Data.LiquidPtr
 import Foreign.Storable         (Storable(..))
 import Control.Monad            (when)
 import Control.Exception        (assert)
@@ -56,9 +57,10 @@ import Data.ByteString.Utils.UnalignedAccess
 
 strlen :: Ptr Word8 -> IO Int
 strlen = go 0 where
+  {-@ go :: Nat -> GHC.Ptr.Ptr Word8 -> IO Int @-}
   go :: Int -> Ptr Word8 -> IO Int
   go !acc !p = do
-    c <- peek p
+    c <- Data.LiquidPtr.peek p
     if | c == 0 -> pure acc
        | nextAcc <- acc + 1
        , nextAcc >= 0 -> go nextAcc (p `plusPtr` 1)
@@ -69,7 +71,7 @@ memchr :: Ptr Word8 -> Word8 -> Int -> IO (Ptr Word8)
 memchr !p !target !len
   | len == 0 = pure nullPtr
   | otherwise = assert (len > 0) $ do
-      c <- peek p
+      c <- Data.LiquidPtr.peek p
       if c == target
         then pure p
         else memchr (p `plusPtr` 1) target (len - 1)
@@ -92,8 +94,8 @@ memcmp1 :: Ptr Word8 -> Ptr Word8 -> Int -> IO Int
 memcmp1 !p1 !p2 !len
   | len == 0 = pure 0
   | otherwise = assert (len > 0) $ do
-      c1 <- peek p1
-      c2 <- peek p2
+      c1 <- Data.LiquidPtr.peek p1
+      c2 <- Data.LiquidPtr.peek p2
       if | c1 == c2 -> memcmp1 (p1 `plusPtr` 1) (p2 `plusPtr` 1) (len - 1)
          | c1 < c2   -> pure (0-1)
          | otherwise -> pure 1
@@ -105,34 +107,39 @@ memcmp1 !p1 !p2 !len
 
 -- | duplicate a string, interspersing the character through the elements of the
 -- duplicated string
+{-@ intersperse :: {dp:(GHC.Ptr.Ptr Word8) | PtrValid dp} -> {sp:(GHC.Ptr.Ptr Word8) |PtrValid sp} -> {n:Nat | PtrValidN dp n} -> Word8 -> IO () @-}
 intersperse :: Ptr Word8 -> Ptr Word8 -> Int -> Word8 -> IO ()
 intersperse !dst !src !len !w = case len of
   0 -> pure ()
   1 -> do
     -- copy last char
-    c <- peekByteOff src 0
-    pokeByteOff dst 0 (c :: Word8)
+    c <- Data.LiquidPtr.peekByteOff src 0
+    Data.LiquidPtr.pokeByteOff dst 0 (c :: Word8)
   _ -> do
-    c <- peekByteOff src 0
-    pokeByteOff dst 0 (c :: Word8)
-    pokeByteOff dst 1 w
+    c <- Data.LiquidPtr.peekByteOff src 0
+    Data.LiquidPtr.pokeByteOff dst 0 (c :: Word8)
+    Data.LiquidPtr.pokeByteOff dst 1 w
     intersperse (plusPtr dst 2) (plusPtr src 1) (len-1) w
 
+{-@ countOccBA :: ByteArray# -> {n:Int | n > 0} -> Word8 -> IO Int @-}
 countOccBA :: ByteArray# -> Int -> Word8 -> IO Int
 countOccBA ba len w = pure (go 0 0)
   where
+    {-@ go :: m:Nat -> n:Nat -> Int @-}
+    go :: Int -> Int -> Int
     go !n !i@(I# i#)
       | i == len = n
       | W8# (indexWord8Array# ba i#) == w = go (n+1) (i+1)
       | otherwise = go n (i+1)
 
+{-@ countOcc :: {p:(GHC.Ptr.Ptr Word8) | PtrValid p} -> {n:Int | PtrValidN p n} -> Word8 -> IO Int @-}
 countOcc :: Ptr Word8 -> Int -> Word8 -> IO Int
 countOcc p len w = go 0 0
   where
     go !n !i
       | i == len  = pure n
       | otherwise = do
-          c <- peekByteOff p i
+          c <- Data.LiquidPtr.peekByteOff p i
           if c == w
             then go (n+1) (i+1)
             else go n     (i+1)
@@ -154,10 +161,11 @@ reverseBytes !dst !src !n
 
 -- | Note that reverse_bytes reverses at least one byte.
 -- Then it loops if necessary until the destination buffer is full
+{-@ reverse_bytes :: {odptr:(GHC.Ptr.Ptr Word8) | PtrValid odptr} -> {dptr:(GHC.Ptr.Ptr Word8) | PtrValid dptr} -> {sptr:(GHC.Ptr.Ptr Word8) | PtrValid sptr} -> IO () @-}
 reverse_bytes :: Ptr Word8 -> Ptr Word8 -> Ptr Word8 -> IO ()
 reverse_bytes orig_dst dst src = do
-  c <- peekByteOff src 0
-  pokeByteOff dst 0 (c :: Word8)
+  c <- Data.LiquidPtr.peekByteOff src 0
+  Data.LiquidPtr.pokeByteOff dst 0 (c :: Word8)
   if orig_dst == dst
     then pure ()
     else reverse_bytes orig_dst (plusPtr dst (-1)) (plusPtr src 1)
@@ -168,7 +176,7 @@ findMaximum !p !n = assert (n > 0) $ find_maximum minBound p (plusPtr p (n - 1))
 
 find_maximum :: Word8 -> Ptr Word8 -> Ptr Word8 -> IO Word8
 find_maximum !m !p !plast = do
-  c <- peekByteOff p 0
+  c <- Data.LiquidPtr.peekByteOff p 0
   let !c' = if c > m then c else m
   if p == plast
     then pure c'
@@ -177,9 +185,10 @@ find_maximum !m !p !plast = do
 findMinimum :: Ptr Word8 -> Int -> IO Word8
 findMinimum !p !n = assert (n > 0) $ find_minimum maxBound p (plusPtr p (n - 1))
 
+{-@ find_minimum :: Word8 -> GHC.Ptr.Ptr Word8 -> {p:(GHC.Ptr.Ptr Word8) | PtrValid p} -> IO Word8 @-}
 find_minimum :: Word8 -> Ptr Word8 -> Ptr Word8 -> IO Word8
 find_minimum !m !p !plast = do
-  c <- peekByteOff p 0
+  c <- Data.LiquidPtr.peekByteOff p 0
   let !c' = if c < m then c else m
   if p == plast
     then pure c'
@@ -199,25 +208,25 @@ quick_sort !p !low !high
     quick_sort p low (pivot_index-1)
     quick_sort p (pivot_index+1) high
 
-
+{-@ partition :: {p:(GHC.Ptr.Ptr Word8) | PtrValid p} -> Int -> {n:Int | PtrValidN p n} -> IO Int @-}
 partition :: Ptr Word8 -> Int -> Int -> IO Int
 partition !p !low !high = do
   -- choose the rightmost element as the pivot
-  pivot <- peekByteOff p high :: IO Word8
+  pivot <- Data.LiquidPtr.peekByteOff p high :: IO Word8
   -- traverse through all elements.
   -- swap element smaller than pivot at index j with leftmost element at
   -- index i greater than pivot (can be itself if no greater element read yet)
   let go !i !j
         | j > high  = pure (i-1)
         | otherwise = do
-          jv <- peekByteOff p j
+          jv <- Data.LiquidPtr.peekByteOff p j
           if (jv <= pivot)
             then do
               when (i /= j) $ do
                 -- swap values
-                iv <- peekByteOff p i :: IO Word8
-                pokeByteOff p j iv
-                pokeByteOff p i jv
+                iv <- Data.LiquidPtr.peekByteOff p i :: IO Word8
+                Data.LiquidPtr.pokeByteOff p j iv
+                Data.LiquidPtr.pokeByteOff p i jv
               go (i+1) (j+1)
             else
               go i (j+1)
@@ -252,6 +261,8 @@ isValidUtf8' idx !len = go 0
                | b0 >= 0xE0 && b0 <= 0xEF -> go3 (i+1) b0
                | otherwise                -> go4 (i+1) b0
 
+    {-@ go2 :: {n:Int | n >= 0} -> IO Bool @-}
+    go2 :: Int -> IO Bool
     go2 !i
       | i >= len  = pure False
       | indexIsCont i
@@ -259,6 +270,8 @@ isValidUtf8' idx !len = go 0
       | otherwise
       = pure False
 
+    -- {-@ go2 :: {n:Int | n >= 0} -> IO Bool @-}
+    -- go2 :: Int -> IO Bool
     go3 !i !b0
       | i >= len - 1  = pure False -- Be careful: i+1 might overflow!
       | indexIsCont i
@@ -272,6 +285,8 @@ isValidUtf8' idx !len = go 0
       | otherwise
       = pure False
 
+    -- {-@ go4 :: {n:Int | n >= 0} -> IO Bool @-}
+    -- go4 :: Int -> IO Bool
     go4 !i !b0
       | i >= len - 2  = pure False -- Be careful: i+2 might overflow!
       | indexIsCont i
@@ -297,21 +312,23 @@ getDigit (I# i) = W8# (indexWord8OffAddr# digits i)
   where
     !digits = "0123456789abcdef"#
 
+{-@ putDigit :: p:GHC.Ptr.Ptr a -> {n:Int | PtrValidN p n} -> Int -> IO () @-}
 putDigit :: Ptr a -> Int -> Int -> IO ()
-putDigit !addr !off !i = pokeByteOff addr off (getDigit i)
+putDigit !addr !off !i = Data.LiquidPtr.pokeByteOff addr off (getDigit i)
 
 -- | Reverse bytes in the given memory range (inclusive)
 reverseBytesInplace :: Ptr Word8 -> Ptr Word8 -> IO ()
 reverseBytesInplace !p1 !p2
   | p1 < p2 = do
-    c1 <- peekByteOff p1 0
-    c2 <- peekByteOff p2 0
-    pokeByteOff p1 0 (c2 :: Word8)
-    pokeByteOff p2 0 (c1 :: Word8)
+    c1 <- Data.LiquidPtr.peekByteOff p1 0
+    c2 <- Data.LiquidPtr.peekByteOff p2 0
+    Data.LiquidPtr.pokeByteOff p1 0 (c2 :: Word8)
+    Data.LiquidPtr.pokeByteOff p2 0 (c1 :: Word8)
     reverseBytesInplace (plusPtr p1 1) (plusPtr p2 (-1))
   | otherwise = pure ()
 
 -- | Encode signed number as decimal
+{-@ encodeSignedDec :: (Eq a, Num a, Integral a) => a -> {p:GHC.Ptr.Ptr Word8 | PtrValid p} -> IO (GHC.Ptr.Ptr Word8) @-}
 encodeSignedDec :: (Eq a, Num a, Integral a) => a -> Ptr Word8 -> IO (Ptr Word8)
 {-# INLINABLE encodeSignedDec #-} -- for specialization
 encodeSignedDec !x !buf
@@ -319,7 +336,7 @@ encodeSignedDec !x !buf
   | otherwise = do
     -- we cannot negate directly as  0 - (minBound :: Int) = minBound
     -- So we write the sign and the first digit.
-    pokeByteOff buf 0 '-'
+    Data.LiquidPtr.pokeByteOff buf 0 '-'
     let !(q,r) = quotRem x (-10)
     putDigit buf 1 (fromIntegral (abs r))
     case q of
@@ -328,6 +345,7 @@ encodeSignedDec !x !buf
 
 
 -- | Encode positive number as decimal
+{-@ encodeUnsignedDec :: (Eq a, Num a, Integral a) => a -> {m:GHC.Ptr.Ptr Word8 | PtrValid m} -> IO (GHC.Ptr.Ptr Word8) @-}
 encodeUnsignedDec :: (Eq a, Num a, Integral a) => a -> Ptr Word8 -> IO (Ptr Word8)
 {-# INLINABLE encodeUnsignedDec #-} -- for specialization
 encodeUnsignedDec !v !next_ptr = encodeUnsignedDec' v next_ptr next_ptr
@@ -337,6 +355,7 @@ encodeUnsignedDec !v !next_ptr = encodeUnsignedDec' v next_ptr next_ptr
 -- Take two pointers (orig_ptr, next_ptr) to support already encoded digits
 -- (e.g. used by encodeSignedDec to avoid overflows)
 --
+{-@ encodeUnsignedDec' :: (Eq a, Num a, Integral a) => a -> {m:GHC.Ptr.Ptr Word8 | PtrValid m} -> {n:GHC.Ptr.Ptr Word8 | PtrValid n} -> IO (GHC.Ptr.Ptr Word8) @-}
 encodeUnsignedDec' :: (Eq a, Num a, Integral a) => a -> Ptr Word8 -> Ptr Word8 -> IO (Ptr Word8)
 {-# INLINABLE encodeUnsignedDec' #-} -- for specialization
 encodeUnsignedDec' !v !orig_ptr !next_ptr = do
@@ -350,6 +369,7 @@ encodeUnsignedDec' !v !orig_ptr !next_ptr = do
       pure (plusPtr next_ptr 1)
     _ -> encodeUnsignedDec' q orig_ptr (plusPtr next_ptr 1)
 
+{-@ encodeUnsignedDecPadded :: (Eq a, Num a, Integral a) => {n:Int | n >= 1} -> a -> {p:GHC.Ptr.Ptr Word8 | PtrValid p} -> IO () @-} -- ?
 encodeUnsignedDecPadded :: (Eq a, Num a, Integral a) => Int -> a -> Ptr Word8 -> IO ()
 {-# INLINABLE encodeUnsignedDecPadded #-} -- for specialization
 encodeUnsignedDecPadded !max_width !v !buf = assert (max_width > 0) $ do
@@ -366,6 +386,7 @@ encodeUnsignedDecPadded !max_width !v !buf = assert (max_width > 0) $ do
 
 
 -- | Encode positive number as hexadecimal
+{-@ encodeUnsignedHex :: (Eq a, Num a, Integral a, Bits a) => a -> {m:GHC.Ptr.Ptr Word8 | PtrValid m} -> IO (GHC.Ptr.Ptr Word8) @-}
 encodeUnsignedHex :: (Eq a, Num a, Integral a, Bits a) => a -> Ptr Word8 -> IO (Ptr Word8)
 {-# INLINABLE encodeUnsignedHex #-} -- for specialization
 encodeUnsignedHex !v !next_ptr = encodeUnsignedHex' v next_ptr next_ptr
@@ -373,6 +394,7 @@ encodeUnsignedHex !v !next_ptr = encodeUnsignedHex' v next_ptr next_ptr
 -- | Encode positive number as little-endian hexdecimal, then reverse it.
 --
 -- Take two pointers (orig_ptr, next_ptr) to support already encoded digits
+{-@ encodeUnsignedHex' :: (Eq a, Num a, Integral a, Bits a) => a -> {m:GHC.Ptr.Ptr Word8 | PtrValid m} -> {n:GHC.Ptr.Ptr Word8 | PtrValid n} -> IO (GHC.Ptr.Ptr Word8) @-}
 encodeUnsignedHex' :: (Eq a, Num a, Integral a, Bits a) => a -> Ptr Word8 -> Ptr Word8 -> IO (Ptr Word8)
 {-# INLINABLE encodeUnsignedHex' #-} -- for specialization
 encodeUnsignedHex' !v !orig_ptr !next_ptr = do

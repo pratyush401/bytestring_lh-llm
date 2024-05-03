@@ -1,2 +1,830 @@
-resolver:
-  url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/22/13.yaml
+bytestring-lh> build (lib)
+Preprocessing library for bytestring-lh-0.13.0.0..
+Building library for bytestring-lh-0.13.0.0..
+[10 of 34] Compiling Data.ByteString.Internal.Pure
+WARNING: Found false in Data/ByteString/Internal/Pure.hs:340:13
+WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
+[1;91m
+**** LIQUID: UNSAFE ************************************************************
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:132:48: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == ?e + (1 : int)}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV < n}
+    .
+    in the context
+      ?e : GHC.Prim.Int#
+       
+      n : {n : GHC.Types.Int | n >= 0}
+    Constraint id 620
+    |
+132 |       | W8# (indexWord8Array# ba i#) == w = go (n+1) (i+1)
+    |                                                ^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:133:24: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == ?b
+                                && v == n
+                                && v == (?b : int)
+                                && v >= 0}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV < n}
+    .
+    in the context
+      ?b : GHC.Prim.Int#
+       
+      n : {n : GHC.Types.Int | n >= 0}
+    Constraint id 623
+    |
+133 |       | otherwise = go n (i+1)
+    |                        ^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:142:45: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == ?a
+                                && v == i
+                                && v == (?a : int)
+                                && v >= 0
+                                && pbase p <= p}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV < (pbase p + plen (pbase p)) - p}
+    .
+    in the context
+      i : {i : GHC.Types.Int | i >= 0
+                               && pbase p <= p}
+       
+      ?a : GHC.Prim.Int#
+       
+      p : {p : (GHC.Ptr.Ptr GHC.Word.Word8) | 0 < (pbase p + plen (pbase p)) - p
+                                              && pbase p <= p}
+    Constraint id 655
+    |
+142 |           c <- Data.LiquidPtr.peekByteOff p i
+    |                                             ^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:144:27: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == i + (1 : int)}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV < i}
+    .
+    in the context
+      i : {i : GHC.Types.Int | i >= 0
+                               && pbase p <= p}
+       
+      ?b : GHC.Prim.Int#
+       
+      p : {p : (GHC.Ptr.Ptr GHC.Word.Word8) | 0 < (pbase p + plen (pbase p)) - p
+                                              && pbase p <= p}
+    Constraint id 643
+    |
+144 |             then go (n+1) (i+1)
+    |                           ^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:145:27: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == i + (1 : int)}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV < i}
+    .
+    in the context
+      i : {i : GHC.Types.Int | i >= 0
+                               && pbase p <= p}
+       
+      ?a : GHC.Prim.Int#
+       
+      p : {p : (GHC.Ptr.Ptr GHC.Word.Word8) | 0 < (pbase p + plen (pbase p)) - p
+                                              && pbase p <= p}
+    Constraint id 649
+    |
+145 |             else go n     (i+1)
+    |                           ^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:154:24: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == i# + (1 : int)}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV < i}
+    .
+    in the context
+      i# : GHC.Prim.Int#
+       
+      i : {i : GHC.Types.Int | i >= 0}
+    Constraint id 800
+    |
+154 |       | otherwise = go (i+1)
+    |                        ^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:160:31: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : (GHC.Ptr.Ptr GHC.Word.Word8) | v == dst
+                                               && v == GHC.Ptr.Ptr ?a}
+    .
+    is not a subtype of the required type
+      VV : {VV : (GHC.Ptr.Ptr GHC.Word.Word8) | pbase VV <= VV}
+    .
+    in the context
+      ?a : GHC.Prim.Addr#
+       
+      dst : (GHC.Ptr.Ptr GHC.Word.Word8)
+    Constraint id 356
+    |
+160 |   | otherwise = reverse_bytes dst (plusPtr dst (n - 1)) src
+    |                               ^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:160:35: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : (GHC.Ptr.Ptr GHC.Word.Word8) | v == dst + (?h - (1 : int))
+                                               && pbase v == pbase dst
+                                               && v < dst}
+    .
+    is not a subtype of the required type
+      VV : {VV : (GHC.Ptr.Ptr GHC.Word.Word8) | pbase VV <= VV}
+    .
+    in the context
+      ?h : GHC.Prim.Int#
+       
+      ?d : GHC.Prim.Addr#
+       
+      n : GHC.Types.Int
+       
+      dst : (GHC.Ptr.Ptr GHC.Word.Word8)
+    Constraint id 353
+    |
+160 |   | otherwise = reverse_bytes dst (plusPtr dst (n - 1)) src
+    |                                   ^^^^^^^^^^^^^^^^^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:160:57: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : (GHC.Ptr.Ptr GHC.Word.Word8) | v == src
+                                               && v == GHC.Ptr.Ptr ?b}
+    .
+    is not a subtype of the required type
+      VV : {VV : (GHC.Ptr.Ptr GHC.Word.Word8) | pbase VV <= VV}
+    .
+    in the context
+      src : (GHC.Ptr.Ptr GHC.Word.Word8)
+       
+      ?b : GHC.Prim.Addr#
+    Constraint id 351
+    |
+160 |   | otherwise = reverse_bytes dst (plusPtr dst (n - 1)) src
+    |                                                         ^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:179:37: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == (0 : int)}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | pbase p <= p}
+    .
+    in the context
+      ?c : GHC.Prim.Addr#
+       
+      p : (GHC.Ptr.Ptr GHC.Word.Word8)
+    Constraint id 438
+    |
+179 |   c <- Data.LiquidPtr.peekByteOff p 0
+    |                                     ^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:186:62: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : (GHC.Ptr.Ptr GHC.Word.Word8) | v == p + (?b - (1 : int))
+                                               && pbase v == pbase p
+                                               && v < p}
+    .
+    is not a subtype of the required type
+      VV : {VV : (GHC.Ptr.Ptr GHC.Word.Word8) | pbase VV <= VV}
+    .
+    in the context
+      ?e : GHC.Prim.Addr#
+       
+      ?b : GHC.Prim.Int#
+       
+      n : GHC.Types.Int
+       
+      p : (GHC.Ptr.Ptr GHC.Word.Word8)
+    Constraint id 445
+    |
+186 | findMinimum !p !n = assert (n > 0) $ find_minimum maxBound p (plusPtr p (n - 1))
+    |                                                              ^^^^^^^^^^^^^^^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:191:37: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == (0 : int)}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | pbase p <= p}
+    .
+    in the context
+      ?b : GHC.Prim.Addr#
+       
+      p : (GHC.Ptr.Ptr GHC.Word.Word8)
+    Constraint id 471
+    |
+191 |   c <- Data.LiquidPtr.peekByteOff p 0
+    |                                     ^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:207:30: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : (GHC.Ptr.Ptr GHC.Word.Word8) | v == p
+                                               && v == GHC.Ptr.Ptr ?a}
+    .
+    is not a subtype of the required type
+      VV : {VV : (GHC.Ptr.Ptr GHC.Word.Word8) | pbase VV <= VV}
+    .
+    in the context
+      ?a : GHC.Prim.Addr#
+       
+      p : (GHC.Ptr.Ptr GHC.Word.Word8)
+    Constraint id 508
+    |
+207 |     pivot_index <- partition p low high
+    |                              ^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:207:36: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == ?d
+                                && v == high
+                                && v == (?d : int)}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | pbase p <= p}
+    .
+    in the context
+      high : GHC.Types.Int
+       
+      ?b : GHC.Prim.Addr#
+       
+      ?d : GHC.Prim.Int#
+       
+      p : (GHC.Ptr.Ptr GHC.Word.Word8)
+    Constraint id 506
+    |
+207 |     pivot_index <- partition p low high
+    |                                    ^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:208:16: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : (GHC.Ptr.Ptr GHC.Word.Word8) | v == p
+                                               && v == GHC.Ptr.Ptr ?a}
+    .
+    is not a subtype of the required type
+      VV : {VV : (GHC.Ptr.Ptr GHC.Word.Word8) | VV < p}
+    .
+    in the context
+      ?a : GHC.Prim.Addr#
+       
+      p : (GHC.Ptr.Ptr GHC.Word.Word8)
+    Constraint id 500
+    |
+208 |     quick_sort p low (pivot_index-1)
+    |                ^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:209:16: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : (GHC.Ptr.Ptr GHC.Word.Word8) | v == p
+                                               && v == GHC.Ptr.Ptr ?a}
+    .
+    is not a subtype of the required type
+      VV : {VV : (GHC.Ptr.Ptr GHC.Word.Word8) | VV < p}
+    .
+    in the context
+      ?a : GHC.Prim.Addr#
+       
+      p : (GHC.Ptr.Ptr GHC.Word.Word8)
+    Constraint id 492
+    |
+209 |     quick_sort p (pivot_index+1) high
+    |                ^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:215:41: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == ?a
+                                && v == high
+                                && v == (?a : int)
+                                && v < (pbase p + plen (pbase p)) - p
+                                && pbase p <= p}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV >= 0}
+    .
+    in the context
+      high : {high : GHC.Types.Int | high < (pbase p + plen (pbase p)) - p
+                                     && pbase p <= p}
+       
+      ?a : GHC.Prim.Int#
+       
+      p : {p : (GHC.Ptr.Ptr GHC.Word.Word8) | 0 < (pbase p + plen (pbase p)) - p
+                                              && pbase p <= p}
+    Constraint id 562
+    |
+215 |   pivot <- Data.LiquidPtr.peekByteOff p high :: IO Word8
+    |                                         ^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:222:46: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == ?f
+                                && v == j
+                                && v == (?f : int)
+                                && v >= ?e
+                                && v >= i
+                                && v >= low
+                                && pbase p <= p}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV >= 0}
+    .
+    in the context
+      ?e : GHC.Prim.Int#
+       
+      low : GHC.Types.Int
+       
+      i : {i : GHC.Types.Int | i >= ?e
+                               && i >= low
+                               && pbase p <= p}
+       
+      ?b : GHC.Prim.Addr#
+       
+      j : {j : GHC.Types.Int | j >= ?e
+                               && j >= i
+                               && j >= low
+                               && pbase p <= p}
+       
+      ?f : GHC.Prim.Int#
+       
+      p : {p : (GHC.Ptr.Ptr GHC.Word.Word8) | 0 < (pbase p + plen (pbase p)) - p
+                                              && pbase p <= p}
+    Constraint id 556
+    |
+222 |           jv <- Data.LiquidPtr.peekByteOff p j
+    |                                              ^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:227:52: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == ?d
+                                && v == i
+                                && v == (?d : int)
+                                && v >= ?f
+                                && v >= low
+                                && pbase p <= p}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV >= 0}
+    .
+    in the context
+      ?c : GHC.Prim.Addr#
+       
+      low : GHC.Types.Int
+       
+      i : {i : GHC.Types.Int | i >= ?f
+                               && i >= low
+                               && pbase p <= p}
+       
+      ?d : GHC.Prim.Int#
+       
+      ?f : GHC.Prim.Int#
+       
+      p : {p : (GHC.Ptr.Ptr GHC.Word.Word8) | 0 < (pbase p + plen (pbase p)) - p
+                                              && pbase p <= p}
+    Constraint id 542
+    |
+227 |                 iv <- Data.LiquidPtr.peekByteOff p i :: IO Word8
+    |                                                    ^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:228:46: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == ?f
+                                && v == j
+                                && v == (?f : int)
+                                && v >= ?e
+                                && v >= i
+                                && v >= low
+                                && pbase p <= p}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV >= 0}
+    .
+    in the context
+      ?e : GHC.Prim.Int#
+       
+      low : GHC.Types.Int
+       
+      i : {i : GHC.Types.Int | i >= ?e
+                               && i >= low
+                               && pbase p <= p}
+       
+      ?b : GHC.Prim.Addr#
+       
+      j : {j : GHC.Types.Int | j >= ?e
+                               && j >= i
+                               && j >= low
+                               && pbase p <= p}
+       
+      ?f : GHC.Prim.Int#
+       
+      p : {p : (GHC.Ptr.Ptr GHC.Word.Word8) | 0 < (pbase p + plen (pbase p)) - p
+                                              && pbase p <= p}
+    Constraint id 538
+    |
+228 |                 Data.LiquidPtr.pokeByteOff p j iv
+    |                                              ^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:229:46: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == ?d
+                                && v == i
+                                && v == (?d : int)
+                                && v >= ?f
+                                && v >= low
+                                && pbase p <= p}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV >= 0}
+    .
+    in the context
+      ?c : GHC.Prim.Addr#
+       
+      low : GHC.Types.Int
+       
+      i : {i : GHC.Types.Int | i >= ?f
+                               && i >= low
+                               && pbase p <= p}
+       
+      ?d : GHC.Prim.Int#
+       
+      ?f : GHC.Prim.Int#
+       
+      p : {p : (GHC.Ptr.Ptr GHC.Word.Word8) | 0 < (pbase p + plen (pbase p)) - p
+                                              && pbase p <= p}
+    Constraint id 534
+    |
+229 |                 Data.LiquidPtr.pokeByteOff p i jv
+    |                                              ^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:230:18: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == i + (1 : int)}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV < i}
+    .
+    in the context
+      ?i : GHC.Prim.Int#
+       
+      low : GHC.Types.Int
+       
+      i : {i : GHC.Types.Int | i >= ?i
+                               && i >= low
+                               && pbase p <= p}
+       
+      ?g : GHC.Prim.Int#
+       
+      ?f : GHC.Prim.Addr#
+       
+      p : {p : (GHC.Ptr.Ptr GHC.Word.Word8) | 0 < (pbase p + plen (pbase p)) - p
+                                              && pbase p <= p}
+    Constraint id 528
+    |
+230 |               go (i+1) (j+1)
+    |                  ^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:232:18: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == ?d
+                                && v == i
+                                && v == (?d : int)
+                                && v >= ?f
+                                && v >= low
+                                && pbase p <= p}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV < i}
+    .
+    in the context
+      ?c : GHC.Prim.Addr#
+       
+      low : GHC.Types.Int
+       
+      i : {i : GHC.Types.Int | i >= ?f
+                               && i >= low
+                               && pbase p <= p}
+       
+      ?d : GHC.Prim.Int#
+       
+      ?f : GHC.Prim.Int#
+       
+      p : {p : (GHC.Ptr.Ptr GHC.Word.Word8) | 0 < (pbase p + plen (pbase p)) - p
+                                              && pbase p <= p}
+    Constraint id 552
+    |
+232 |               go i (j+1)
+    |                  ^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:259:35: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == i + (1 : int)}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV < i}
+    .
+    in the context
+      i : {i : GHC.Types.Int | i >= 0}
+       
+      ?d : GHC.Prim.Int#
+    Constraint id 673
+    |
+259 |             if | b0 <= 0x7F -> go (i+1) -- ASCII
+    |                                   ^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:260:50: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == i + (1 : int)}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV < i}
+    .
+    in the context
+      i : {i : GHC.Types.Int | i >= 0}
+       
+      ?b : GHC.Prim.Int#
+    Constraint id 678
+    |
+260 |                | b0 >= 0xC2 && b0 <= 0xDF -> go2 (i+1)
+    |                                                  ^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:261:50: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == i + (1 : int)}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV < i}
+    .
+    in the context
+      i : {i : GHC.Types.Int | i >= 0}
+       
+      ?b : GHC.Prim.Int#
+    Constraint id 683
+    |
+261 |                | b0 >= 0xE0 && b0 <= 0xEF -> go3 (i+1) b0
+    |                                                  ^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:262:50: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == i + (1 : int)}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV < i}
+    .
+    in the context
+      i : {i : GHC.Types.Int | i >= 0}
+       
+      ?b : GHC.Prim.Int#
+    Constraint id 689
+    |
+262 |                | otherwise                -> go4 (i+1) b0
+    |                                                  ^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:269:12: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == i + (1 : int)}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV < i}
+    .
+    in the context
+      ?e : GHC.Prim.Int#
+       
+      i : {i : GHC.Types.Int | i >= 0}
+    Constraint id 706
+    |
+269 |       = go (i+1)
+    |            ^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:284:12: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == i + (2 : int)}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV < i}
+    .
+    in the context
+      i : {i : GHC.Types.Int | i /= 0
+                               && i > 0
+                               && i >= 0
+                               && i >= 1
+                               && i <= ?a
+                               && i <= len}
+       
+      len : GHC.Types.Int
+       
+      ?f : GHC.Prim.Int#
+       
+      ?a : GHC.Prim.Int#
+    Constraint id 718
+    |
+284 |       = go (i+2)
+    |            ^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:299:12: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == i + (3 : int)}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV < i}
+    .
+    in the context
+      i : {i : GHC.Types.Int | i /= 0
+                               && i > 0
+                               && i >= 0
+                               && i >= 1
+                               && i <= ?a
+                               && i <= len}
+       
+      ?b : GHC.Prim.Int#
+       
+      len : GHC.Types.Int
+       
+      ?a : GHC.Prim.Int#
+    Constraint id 756
+    |
+299 |       = go (i+3)
+    |            ^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:317:58: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == ?a
+                                && v == off
+                                && v == (?a : int)
+                                && v < (pbase addr + plen (pbase addr)) - addr
+                                && pbase addr <= addr}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV >= 0}
+    .
+    in the context
+      off : {off : GHC.Types.Int | off < (pbase addr + plen (pbase addr)) - addr
+                                   && pbase addr <= addr}
+       
+      addr : (GHC.Ptr.Ptr a)
+       
+      ?a : GHC.Prim.Int#
+    Constraint id 610
+    |
+317 | putDigit !addr !off !i = Data.LiquidPtr.pokeByteOff addr off (getDigit i)
+    |                                                          ^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:377:16: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == ?c - (1 : int)}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV < (pbase buf + plen (pbase buf)) - buf}
+    .
+    in the context
+      ?c : GHC.Prim.Int#
+       
+      max_width : {max_width : GHC.Types.Int | max_width >= 1}
+       
+      buf : {buf : (GHC.Ptr.Ptr GHC.Word.Word8) | 0 < (pbase buf + plen (pbase buf)) - buf
+                                                  && pbase buf <= buf}
+       
+      ?a : GHC.Prim.Addr#
+    Constraint id 597
+    |
+377 |   putDigit buf (max_width - 1) (fromIntegral r)
+    |                ^^^^^^^^^^^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:382:34: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == ?c - (1 : int)}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV < (pbase buf + plen (pbase buf)) - buf}
+    .
+    in the context
+      ?c : {?c : GHC.Types.Int | ?c /= ?e
+                                 && ?c /= max_width
+                                 && ?c >= 0
+                                 && ?c >= (0 : int)
+                                 && ?c < ?e
+                                 && ?c < max_width
+                                 && ?c <= ?e
+                                 && ?c <= max_width
+                                 && ?c <= ?e - (1 : int)
+                                 && pbase buf <= buf}
+       
+      ?e : GHC.Prim.Int#
+       
+      max_width : {max_width : GHC.Types.Int | max_width >= 1}
+       
+      buf : {buf : (GHC.Ptr.Ptr GHC.Word.Word8) | 0 < (pbase buf + plen (pbase buf)) - buf
+                                                  && pbase buf <= buf}
+       
+      ?a : GHC.Prim.Addr#
+    Constraint id 585
+    |
+382 |             pad n = putDigit buf (n - 1) 0 >> pad (n - 1)
+    |                                  ^^^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Internal/Pure.hs:384:34: error:
+    Liquid Type Mismatch
+    .
+    The inferred type
+      VV : {v : GHC.Types.Int | v == ?b - (1 : int)}
+    .
+    is not a subtype of the required type
+      VV : {VV : GHC.Types.Int | VV >= 1}
+    .
+    in the context
+      ?b : GHC.Prim.Int#
+       
+      max_width : {max_width : GHC.Types.Int | max_width >= 1}
+    Constraint id 593
+    |
+384 |     _ -> encodeUnsignedDecPadded (max_width - 1) q buf
+    |                                  ^^^^^^^^^^^^^^^
+[0m
+
+Error: [S-7282]
+       Stack failed to execute the build plan.
+       
+       While executing the build plan, Stack encountered the error:
+       
+       [S-7011]
+       While building package bytestring-lh-0.13.0.0 (scroll up to its section to see the error) using:
+       /Users/pratyushsahu/.stack/setup-exe-cache/aarch64-osx/Cabal-simple_6HauvNHV_3.6.3.0_ghc-9.2.5 --verbose=1 --builddir=.stack-work/dist/aarch64-osx/ghc-9.2.5 build lib:bytestring-lh --ghc-options ""
+       Process exited with code: ExitFailure 1 

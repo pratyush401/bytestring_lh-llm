@@ -144,12 +144,10 @@ import Foreign.C.String         (CString)
 import Foreign.Marshal.Utils
 import Foreign.Marshal.Alloc    (finalizerFree)
 
-#if PURE_HASKELL
 import qualified Data.ByteString.Internal.Pure as Pure
 import Data.Bits                (toIntegralSized, Bits)
 import Data.Maybe               (fromMaybe)
 import Control.Monad            ((<$!>))
-#endif
 
 import Data.LiquidPtr
 
@@ -218,10 +216,10 @@ import GHC.ForeignPtr           (unsafeWithForeignPtr)
 import qualified Language.Haskell.TH.Lib as TH
 import qualified Language.Haskell.TH.Syntax as TH
 
--- #if !MIN_VERSION_base(4,15,0)
--- unsafeWithForeignPtr :: ForeignPtr a -> (Ptr a -> IO b) -> IO b
--- unsafeWithForeignPtr = Data.LiquidPtr.withForeignPtr
--- #endif
+#if !MIN_VERSION_base(4,15,0)
+unsafeWithForeignPtr :: ForeignPtr a -> (Ptr a -> IO b) -> IO b
+unsafeWithForeignPtr = Data.LiquidPtr.withForeignPtr
+#endif
 
 -- CFILES stuff is Hugs only
 {-# CFILES cbits/fpstring.c #-}
@@ -236,6 +234,15 @@ import qualified Language.Haskell.TH.Syntax as TH
 -- called an additional time due to this call, and the finalizer will
 -- be called with the same address that it would have had this call
 -- not happened, *not* the new address.
+
+{-@ measure ofForeignPtr :: GHC.ForeignPtr.ForeignPtr a -> GHC.Ptr.Ptr a @-}
+
+
+{-@ predicate FptrEnd  (ofForeignPtr P) = ((pbase (ofForeignPtr P)) + (plen (pbase (ofForeignPtr P)))) @-}
+{-@ predicate FPtrSize (ofForeignPtr P) = ((PtrEnd (ofForeignPtr P)) - (ofForeignPtr P)) @-}
+{-@ predicate FPtrValid (ofForeignPtr P) = ((pbase (ofForeignPtr P)) <= (ofForeignPtr P) && 0 < PtrSize (ofForeignPtr P)) @-}
+{-@ predicate FPtrValidN (ofForeignPtr P) N = ((pbase (ofForeignPtr P)) <= (ofForeignPtr P) && N < PtrSize (ofForeignPtr P)) @-}
+
 plusForeignPtr :: ForeignPtr a -> Int -> ForeignPtr b
 plusForeignPtr (ForeignPtr addr guts) (I# offset) = ForeignPtr (plusAddr# addr offset) guts
 {-# INLINE [0] plusForeignPtr #-}
@@ -255,12 +262,14 @@ peekFp fp = unsafeWithForeignPtr fp Data.LiquidPtr.peek
 pokeFp :: Storable a => ForeignPtr a -> a -> IO ()
 pokeFp fp val = unsafeWithForeignPtr fp $ \p -> Data.LiquidPtr.poke p val
 
+{-@ peekFpByteOff :: (Foreign.Storable.Storable a) => p:(GHC.ForeignPtr.ForeignPtr a) -> {n:Nat | (pbase (ofForeignPtr p)) <= (ofForeignPtr p) && n < PtrSize (ofForeignPtr p)} -> IO a @-}
 peekFpByteOff :: Storable a => ForeignPtr a -> Int -> IO a
-peekFpByteOff fp off = unsafeWithForeignPtr fp $ \p ->
+peekFpByteOff fp off = Data.LiquidPtr.withForeignPtr fp $ \p ->
   Data.LiquidPtr.peekByteOff p off
 
+{-@ pokeFpByteOff :: (Foreign.Storable.Storable a) => p:(GHC.ForeignPtr.ForeignPtr b) -> {n:Nat | (pbase (ofForeignPtr p)) <= (ofForeignPtr p) && n < PtrSize (ofForeignPtr p)} -> a -> IO () @-}
 pokeFpByteOff :: Storable a => ForeignPtr b -> Int -> a -> IO ()
-pokeFpByteOff fp off val = unsafeWithForeignPtr fp $ \p ->
+pokeFpByteOff fp off val = Data.LiquidPtr.withForeignPtr fp $ \p ->
   Data.LiquidPtr.pokeByteOff p off val
 
 -- | Most operations on a 'ByteString' need to read from the buffer
@@ -1119,26 +1128,26 @@ memchr :: Ptr Word8 -> Word8 -> CSize -> IO (Ptr Word8)
 memcmp :: Ptr Word8 -> Ptr Word8 -> Int -> IO CInt
 -- {-# DEPRECATED memset "Use Foreign.Marshal.Utils.fillBytes instead" #-}
 -- | deprecated since @bytestring-0.11.5.0@
--- memset :: Ptr Word8 -> Word8 -> CSize -> IO (Ptr Word8)
+memset :: Ptr Word8 -> Word8 -> CSize -> IO (Ptr Word8)
 
-#if !PURE_HASKELL
+-- #if !PURE_HASKELL
 
-foreign import ccall unsafe "string.h strlen" c_strlen
-    :: CString -> IO CSize
+-- foreign import ccall unsafe "string.h strlen" c_strlen
+--     :: CString -> IO CSize
 
-foreign import ccall unsafe "string.h memchr" c_memchr
-    :: Ptr Word8 -> CInt -> CSize -> IO (Ptr Word8)
-memchr p w sz = c_memchr p (fromIntegral w) sz
+-- foreign import ccall unsafe "string.h memchr" c_memchr
+--     :: Ptr Word8 -> CInt -> CSize -> IO (Ptr Word8)
+-- memchr p w sz = c_memchr p (fromIntegral w) sz
 
-foreign import ccall unsafe "string.h memcmp" c_memcmp
-    :: Ptr Word8 -> Ptr Word8 -> CSize -> IO CInt
-memcmp p q s = c_memcmp p q (fromIntegral s)
+-- foreign import ccall unsafe "string.h memcmp" c_memcmp
+--     :: Ptr Word8 -> Ptr Word8 -> CSize -> IO CInt
+-- memcmp p q s = c_memcmp p q (fromIntegral s)
 
-foreign import ccall unsafe "string.h memset" c_memset
-    :: Ptr Word8 -> CInt -> CSize -> IO (Ptr Word8)
-memset p w sz = c_memset p (fromIntegral w) sz
+-- foreign import ccall unsafe "string.h memset" c_memset
+--     :: Ptr Word8 -> CInt -> CSize -> IO (Ptr Word8)
+-- memset p w sz = c_memset p (fromIntegral w) sz
 
-#else
+-- #else
 
 c_strlen :: CString -> IO CSize
 c_strlen p = checkedCast <$!> Pure.strlen (castPtr p)
@@ -1149,7 +1158,7 @@ memcmp p q s = checkedCast <$!> Pure.memcmp p q s
 
 memset p w len = p <$ fillBytes p w (checkedCast len)
 
-#endif
+-- #endif
 
 -- {-# DEPRECATED memcpy "Use Foreign.Marshal.Utils.copyBytes instead" #-}
 -- | deprecated since @bytestring-0.11.5.0@
@@ -1170,78 +1179,138 @@ c_free_finalizer = finalizerFree
 -- Uses our C code
 --
 
-#if !PURE_HASKELL
+-- #if !PURE_HASKELL
 
-foreign import ccall unsafe "static fpstring.h fps_reverse" c_reverse
-    :: Ptr Word8 -> Ptr Word8 -> CSize -> IO ()
+-- foreign import ccall unsafe "static fpstring.h fps_reverse" c_reverse
+--     :: Ptr Word8 -> Ptr Word8 -> CSize -> IO ()
 
-foreign import ccall unsafe "static fpstring.h fps_intersperse" c_intersperse
-    :: Ptr Word8 -> Ptr Word8 -> CSize -> Word8 -> IO ()
+-- foreign import ccall unsafe "static fpstring.h fps_intersperse" c_intersperse
+--     :: Ptr Word8 -> Ptr Word8 -> CSize -> Word8 -> IO ()
 
-foreign import ccall unsafe "static fpstring.h fps_maximum" c_maximum
-    :: Ptr Word8 -> CSize -> IO Word8
+-- foreign import ccall unsafe "static fpstring.h fps_maximum" c_maximum
+--     :: Ptr Word8 -> CSize -> IO Word8
 
-foreign import ccall unsafe "static fpstring.h fps_minimum" c_minimum
-    :: Ptr Word8 -> CSize -> IO Word8
+-- foreign import ccall unsafe "static fpstring.h fps_minimum" c_minimum
+--     :: Ptr Word8 -> CSize -> IO Word8
 
-foreign import ccall unsafe "static fpstring.h fps_count" c_count
-    :: Ptr Word8 -> CSize -> Word8 -> IO CSize
+-- foreign import ccall unsafe "static fpstring.h fps_count" c_count
+--     :: Ptr Word8 -> CSize -> Word8 -> IO CSize
 
--- fps_count works with both pointers and ByteArray#
-foreign import ccall unsafe "static fpstring.h fps_count" c_count_ba
-    :: ByteArray# -> CSize -> Word8 -> IO CSize
+-- -- fps_count works with both pointers and ByteArray#
+-- foreign import ccall unsafe "static fpstring.h fps_count" c_count_ba
+--     :: ByteArray# -> CSize -> Word8 -> IO CSize
 
-foreign import ccall unsafe "static fpstring.h fps_sort" c_sort
-    :: Ptr Word8 -> CSize -> IO ()
+-- foreign import ccall unsafe "static fpstring.h fps_sort" c_sort
+--     :: Ptr Word8 -> CSize -> IO ()
 
-foreign import ccall unsafe "static sbs_elem_index"
-    c_elem_index :: ByteArray# -> Word8 -> CSize -> IO CPtrdiff
-
-
-
-foreign import ccall unsafe "static _hs_bytestring_uint_dec" c_uint_dec
-    :: CUInt -> Ptr Word8 -> IO (Ptr Word8)
-
-foreign import ccall unsafe "static _hs_bytestring_long_long_uint_dec" c_long_long_uint_dec
-    :: CULLong -> Ptr Word8 -> IO (Ptr Word8)
-
-foreign import ccall unsafe "static _hs_bytestring_int_dec" c_int_dec
-    :: CInt -> Ptr Word8 -> IO (Ptr Word8)
-
-foreign import ccall unsafe "static _hs_bytestring_long_long_int_dec" c_long_long_int_dec
-    :: CLLong -> Ptr Word8 -> IO (Ptr Word8)
-
-foreign import ccall unsafe "static _hs_bytestring_uint_hex" c_uint_hex
-    :: CUInt -> Ptr Word8 -> IO (Ptr Word8)
-
-foreign import ccall unsafe "static _hs_bytestring_long_long_uint_hex" c_long_long_uint_hex
-    :: CULLong -> Ptr Word8 -> IO (Ptr Word8)
-
-foreign import ccall unsafe "static _hs_bytestring_int_dec_padded9"
-    c_int_dec_padded9 :: CInt -> Ptr Word8 -> IO ()
-
-foreign import ccall unsafe "static _hs_bytestring_long_long_int_dec_padded18"
-    c_long_long_int_dec_padded18 :: CLLong -> Ptr Word8 -> IO ()
-
--- We import bytestring_is_valid_utf8 both unsafe and safe. For small inputs
--- we can use the unsafe version to get a bit more performance, but for large
--- inputs the safe version should be used to avoid GC synchronization pauses
--- in multithreaded contexts.
-
-foreign import ccall unsafe "bytestring_is_valid_utf8" cIsValidUtf8BA
-  :: ByteArray# -> CSize -> IO CInt
-
-foreign import ccall safe "bytestring_is_valid_utf8" cIsValidUtf8BASafe
-  :: ByteArray# -> CSize -> IO CInt
-
-foreign import ccall unsafe "bytestring_is_valid_utf8" cIsValidUtf8
-  :: Ptr Word8 -> CSize -> IO CInt
-
-foreign import ccall safe "bytestring_is_valid_utf8" cIsValidUtf8Safe
-  :: Ptr Word8 -> CSize -> IO CInt
+-- foreign import ccall unsafe "static sbs_elem_index"
+--     c_elem_index :: ByteArray# -> Word8 -> CSize -> IO CPtrdiff
 
 
-#else
+
+-- foreign import ccall unsafe "static _hs_bytestring_uint_dec" c_uint_dec
+--     :: CUInt -> Ptr Word8 -> IO (Ptr Word8)
+
+-- foreign import ccall unsafe "static _hs_bytestring_long_long_uint_dec" c_long_long_uint_dec
+--     :: CULLong -> Ptr Word8 -> IO (Ptr Word8)
+
+-- foreign import ccall unsafe "static _hs_bytestring_int_dec" c_int_dec
+--     :: CInt -> Ptr Word8 -> IO (Ptr Word8)
+
+-- foreign import ccall unsafe "static _hs_bytestring_long_long_int_dec" c_long_long_int_dec
+--     :: CLLong -> Ptr Word8 -> IO (Ptr Word8)
+
+-- foreign import ccall unsafe "static _hs_bytestring_uint_hex" c_uint_hex
+--     :: CUInt -> Ptr Word8 -> IO (Ptr Word8)
+
+-- foreign import ccall unsafe "static _hs_bytestring_long_long_uint_hex" c_long_long_uint_hex
+--     :: CULLong -> Ptr Word8 -> IO (Ptr Word8)
+
+-- foreign import ccall unsafe "static _hs_bytestring_int_dec_padded9"
+--     c_int_dec_padded9 :: CInt -> Ptr Word8 -> IO ()
+
+-- foreign import ccall unsafe "static _hs_bytestring_long_long_int_dec_padded18"
+--     c_long_long_int_dec_padded18 :: CLLong -> Ptr Word8 -> IO ()
+
+-- -- We import bytestring_is_valid_utf8 both unsafe and safe. For small inputs
+-- -- we can use the unsafe version to get a bit more performance, but for large
+-- -- inputs the safe version should be used to avoid GC synchronization pauses
+-- -- in multithreaded contexts.
+
+-- foreign import ccall unsafe "bytestring_is_valid_utf8" cIsValidUtf8BA
+--   :: ByteArray# -> CSize -> IO CInt
+
+-- foreign import ccall safe "bytestring_is_valid_utf8" cIsValidUtf8BASafe
+--   :: ByteArray# -> CSize -> IO CInt
+
+-- foreign import ccall unsafe "bytestring_is_valid_utf8" cIsValidUtf8
+--   :: Ptr Word8 -> CSize -> IO CInt
+
+-- foreign import ccall safe "bytestring_is_valid_utf8" cIsValidUtf8Safe
+--   :: Ptr Word8 -> CSize -> IO CInt
+
+
+-- #else
+
+c_reverse :: Ptr Word8 -> Ptr Word8 -> CSize -> IO ()
+c_reverse = undefined
+
+c_intersperse :: Ptr Word8 -> Ptr Word8 -> CSize -> Word8 -> IO ()
+c_intersperse = undefined
+
+c_maximum :: Ptr Word8 -> CSize -> IO Word8
+c_maximum = undefined
+
+c_minimum :: Ptr Word8 -> CSize -> IO Word8
+c_minimum = undefined
+
+c_count :: Ptr Word8 -> CSize -> Word8 -> IO CSize
+c_count = undefined
+
+c_count_ba :: ByteArray# -> CSize -> Word8 -> IO CSize
+c_count_ba = undefined
+
+c_sort :: Ptr Word8 -> CSize -> IO ()
+c_sort = undefined
+
+c_elem_index :: ByteArray# -> Word8 -> CSize -> IO CPtrdiff
+c_elem_index = undefined
+
+c_uint_dec :: CUInt -> Ptr Word8 -> IO (Ptr Word8)
+c_uint_dec = undefined
+
+c_long_long_uint_dec :: CULLong -> Ptr Word8 -> IO (Ptr Word8)
+c_long_long_uint_dec = undefined
+
+c_int_dec :: CInt -> Ptr Word8 -> IO (Ptr Word8)
+c_int_dec = undefined
+
+c_long_long_int_dec :: CLLong -> Ptr Word8 -> IO (Ptr Word8)
+c_long_long_int_dec = undefined
+
+c_uint_hex :: CUInt -> Ptr Word8 -> IO (Ptr Word8)
+c_uint_hex = undefined
+
+c_long_long_uint_hex :: CULLong -> Ptr Word8 -> IO (Ptr Word8)
+c_long_long_uint_hex = undefined
+
+c_int_dec_padded9 :: CInt -> Ptr Word8 -> IO ()
+c_int_dec_padded9 = undefined
+
+c_long_long_int_dec_padded18 :: CLLong -> Ptr Word8 -> IO ()
+c_long_long_int_dec_padded18 = undefined
+
+cIsValidUtf8 :: Ptr Word8 -> CSize -> IO CInt
+cIsValidUtf8 = undefined
+
+cIsValidUtf8BA :: ByteArray# -> CSize -> IO CInt
+cIsValidUtf8 = undefined
+
+cIsValidUtf8BASafe :: ByteArray# -> CSize -> IO CInt
+cIsValidUtf8BASafe = undefined
+
+cIsValidUtf8Safe :: Ptr Word8 -> CSize -> IO CInt
+cIsValidUtf8Safe = undefined
 
 ----------------------------------------------------------------
 -- Haskell version of functions in fpstring.c
@@ -1331,4 +1400,4 @@ c_int_dec_padded9 = Pure.encodeUnsignedDecPadded 9
 c_long_long_int_dec_padded18 :: CLLong -> Ptr Word8 -> IO ()
 c_long_long_int_dec_padded18 = Pure.encodeUnsignedDecPadded 18
 
-#endif
+-- #endif

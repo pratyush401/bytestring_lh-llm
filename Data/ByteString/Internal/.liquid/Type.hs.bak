@@ -218,10 +218,10 @@ import GHC.ForeignPtr           (unsafeWithForeignPtr)
 import qualified Language.Haskell.TH.Lib as TH
 import qualified Language.Haskell.TH.Syntax as TH
 
--- #if !MIN_VERSION_base(4,15,0)
--- unsafeWithForeignPtr :: ForeignPtr a -> (Ptr a -> IO b) -> IO b
--- unsafeWithForeignPtr = Data.LiquidPtr.withForeignPtr
--- #endif
+#if !MIN_VERSION_base(4,15,0)
+unsafeWithForeignPtr :: ForeignPtr a -> (Ptr a -> IO b) -> IO b
+unsafeWithForeignPtr = Data.LiquidPtr.withForeignPtr
+#endif
 
 -- CFILES stuff is Hugs only
 {-# CFILES cbits/fpstring.c #-}
@@ -236,6 +236,15 @@ import qualified Language.Haskell.TH.Syntax as TH
 -- called an additional time due to this call, and the finalizer will
 -- be called with the same address that it would have had this call
 -- not happened, *not* the new address.
+
+{-@ measure ofForeignPtr :: GHC.ForeignPtr.ForeignPtr a -> GHC.Ptr.Ptr a @-}
+
+
+{-@ predicate FptrEnd  (ofForeignPtr P) = ((pbase (ofForeignPtr P)) + (plen (pbase (ofForeignPtr P)))) @-}
+{-@ predicate FPtrSize (ofForeignPtr P) = ((PtrEnd (ofForeignPtr P)) - (ofForeignPtr P)) @-}
+{-@ predicate FPtrValid (ofForeignPtr P) = ((pbase (ofForeignPtr P)) <= (ofForeignPtr P) && 0 < PtrSize (ofForeignPtr P)) @-}
+{-@ predicate FPtrValidN (ofForeignPtr P) N = ((pbase (ofForeignPtr P)) <= (ofForeignPtr P) && N < PtrSize (ofForeignPtr P)) @-}
+
 plusForeignPtr :: ForeignPtr a -> Int -> ForeignPtr b
 plusForeignPtr (ForeignPtr addr guts) (I# offset) = ForeignPtr (plusAddr# addr offset) guts
 {-# INLINE [0] plusForeignPtr #-}
@@ -255,12 +264,14 @@ peekFp fp = unsafeWithForeignPtr fp Data.LiquidPtr.peek
 pokeFp :: Storable a => ForeignPtr a -> a -> IO ()
 pokeFp fp val = unsafeWithForeignPtr fp $ \p -> Data.LiquidPtr.poke p val
 
+{-@ peekFpByteOff :: (Foreign.Storable.Storable a) => p:(GHC.ForeignPtr.ForeignPtr a) -> {n:Nat | (pbase (ofForeignPtr p)) <= (ofForeignPtr p) && n < PtrSize (ofForeignPtr p)} -> IO a @-}
 peekFpByteOff :: Storable a => ForeignPtr a -> Int -> IO a
-peekFpByteOff fp off = unsafeWithForeignPtr fp $ \p ->
+peekFpByteOff fp off = Data.LiquidPtr.withForeignPtr fp $ \p ->
   Data.LiquidPtr.peekByteOff p off
 
+{-@ pokeFpByteOff :: (Foreign.Storable.Storable a) => p:(GHC.ForeignPtr.ForeignPtr b) -> {n:Nat | (pbase (ofForeignPtr p)) <= (ofForeignPtr p) && n < PtrSize (ofForeignPtr p)} -> a -> IO () @-}
 pokeFpByteOff :: Storable a => ForeignPtr b -> Int -> a -> IO ()
-pokeFpByteOff fp off val = unsafeWithForeignPtr fp $ \p ->
+pokeFpByteOff fp off val = Data.LiquidPtr.withForeignPtr fp $ \p ->
   Data.LiquidPtr.pokeByteOff p off val
 
 -- | Most operations on a 'ByteString' need to read from the buffer

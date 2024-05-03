@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <html>
 <head>
-<title>/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Utils/ByteOrder.hs</title>
+<title>./Data/ByteString/Utils/ByteOrder.hs</title>
 </head>
 <head>
 <link type='text/css' rel='stylesheet' href='liquid.css' />
@@ -44,16 +44,16 @@ Put mouse over identifiers to see inferred types
 <span class=hs-linenum>32: </span><span class='hs-definition'>whenLittleEndian</span> <span class='hs-keyglyph'>::</span> <span class='hs-layout'>(</span><span class='hs-varid'>a</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>a</span><span class='hs-layout'>)</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>a</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>a</span>
 <span class=hs-linenum>33: </span><a class=annot href="#"><span class=annottext>forall a .
 lq_tmp$x##278:(lq_tmp$x##277:a -&gt; a) -&gt; lq_tmp$x##279:a -&gt; a</span><span class='hs-definition'>whenLittleEndian</span></a> <a class=annot href="#"><span class=annottext>lq_tmp$x##277:a -&gt; a</span><span class='hs-varid'>fun</span></a> <a class=annot href="#"><span class=annottext>a</span><span class='hs-varid'>val</span></a> <span class='hs-keyglyph'>=</span> <span class='hs-keyword'>case</span> <a class=annot href="#"><span class=annottext>{lq_tmp$x##282 : Data.ByteString.Utils.ByteOrder.ByteOrder | lq_tmp$x##282 == Data.ByteString.Utils.ByteOrder.hostByteOrder}</span><span class='hs-varid'>hostByteOrder</span></a> <span class='hs-keyword'>of</span>
-<span class=hs-linenum>34: </span>  <span class='hs-conid'>LittleEndian</span> <span class='hs-keyglyph'>-&gt;</span> <a class=annot href="#"><span class=annottext>lq_tmp$x##292:a -&gt; a</span><span class='hs-varid'>fun</span></a> <a class=annot href="#"><span class=annottext>{lq_tmp$x##293 : a | lq_tmp$x##293 == val##a4JG}</span><span class='hs-varid'>val</span></a>
-<span class=hs-linenum>35: </span>  <span class='hs-conid'>BigEndian</span>    <span class='hs-keyglyph'>-&gt;</span> <a class=annot href="#"><span class=annottext>{lq_tmp$x##299 : a | lq_tmp$x##299 == val##a4JG}</span><span class='hs-varid'>val</span></a>
+<span class=hs-linenum>34: </span>  <span class='hs-conid'>LittleEndian</span> <span class='hs-keyglyph'>-&gt;</span> <a class=annot href="#"><span class=annottext>lq_tmp$x##292:a -&gt; a</span><span class='hs-varid'>fun</span></a> <a class=annot href="#"><span class=annottext>{lq_tmp$x##293 : a | lq_tmp$x##293 == val##a8Z2}</span><span class='hs-varid'>val</span></a>
+<span class=hs-linenum>35: </span>  <span class='hs-conid'>BigEndian</span>    <span class='hs-keyglyph'>-&gt;</span> <a class=annot href="#"><span class=annottext>{lq_tmp$x##299 : a | lq_tmp$x##299 == val##a8Z2}</span><span class='hs-varid'>val</span></a>
 <span class=hs-linenum>36: </span>
 <span class=hs-linenum>37: </span><span class='hs-comment'>-- | If the host is little-endian, returns the second argument unchanged.</span>
 <span class=hs-linenum>38: </span><span class='hs-comment'>-- If the host is big-endian, applies the given function to the given arg.</span>
 <span class=hs-linenum>39: </span><span class='hs-definition'>whenBigEndian</span> <span class='hs-keyglyph'>::</span> <span class='hs-layout'>(</span><span class='hs-varid'>a</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>a</span><span class='hs-layout'>)</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>a</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>a</span>
 <span class=hs-linenum>40: </span><a class=annot href="#"><span class=annottext>forall a .
 lq_tmp$x##304:(lq_tmp$x##303:a -&gt; a) -&gt; lq_tmp$x##305:a -&gt; a</span><span class='hs-definition'>whenBigEndian</span></a> <a class=annot href="#"><span class=annottext>lq_tmp$x##303:a -&gt; a</span><span class='hs-varid'>fun</span></a> <a class=annot href="#"><span class=annottext>a</span><span class='hs-varid'>val</span></a> <span class='hs-keyglyph'>=</span> <span class='hs-keyword'>case</span> <a class=annot href="#"><span class=annottext>{lq_tmp$x##308 : Data.ByteString.Utils.ByteOrder.ByteOrder | lq_tmp$x##308 == Data.ByteString.Utils.ByteOrder.hostByteOrder}</span><span class='hs-varid'>hostByteOrder</span></a> <span class='hs-keyword'>of</span>
-<span class=hs-linenum>41: </span>  <span class='hs-conid'>LittleEndian</span> <span class='hs-keyglyph'>-&gt;</span> <a class=annot href="#"><span class=annottext>{lq_tmp$x##315 : a | lq_tmp$x##315 == val##a4JI}</span><span class='hs-varid'>val</span></a>
-<span class=hs-linenum>42: </span>  <span class='hs-conid'>BigEndian</span>    <span class='hs-keyglyph'>-&gt;</span> <a class=annot href="#"><span class=annottext>lq_tmp$x##324:a -&gt; a</span><span class='hs-varid'>fun</span></a> <a class=annot href="#"><span class=annottext>{lq_tmp$x##325 : a | lq_tmp$x##325 == val##a4JI}</span><span class='hs-varid'>val</span></a>
+<span class=hs-linenum>41: </span>  <span class='hs-conid'>LittleEndian</span> <span class='hs-keyglyph'>-&gt;</span> <a class=annot href="#"><span class=annottext>{lq_tmp$x##315 : a | lq_tmp$x##315 == val##a8Z4}</span><span class='hs-varid'>val</span></a>
+<span class=hs-linenum>42: </span>  <span class='hs-conid'>BigEndian</span>    <span class='hs-keyglyph'>-&gt;</span> <a class=annot href="#"><span class=annottext>lq_tmp$x##324:a -&gt; a</span><span class='hs-varid'>fun</span></a> <a class=annot href="#"><span class=annottext>{lq_tmp$x##325 : a | lq_tmp$x##325 == val##a8Z4}</span><span class='hs-varid'>val</span></a>
 </pre>
 </body>
 </html>

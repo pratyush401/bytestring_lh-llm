@@ -90,7 +90,7 @@ nullPtr = GHC.Ptr.nullPtr
 castPtr :: GHC.Ptr.Ptr a -> GHC.Ptr.Ptr b
 castPtr  = GHC.Ptr.castPtr
 
-{-@ plusPtr :: p:GHC.Ptr.Ptr a -> off:Int -> {v:(Ptr a) | v = p + off && pbase v = pbase p} @-}
+{-@ plusPtr :: p:GHC.Ptr.Ptr a -> off:Int -> {v:(Ptr a) | v = p + off && pbase v = pbase p && v < p} @-} -- ???
 plusPtr :: GHC.Ptr.Ptr a -> Int -> GHC.Ptr.Ptr a
 plusPtr  = GHC.Ptr.plusPtr
 
