@@ -1,0 +1,6 @@
+#!/usr/bin/bash
+# run from bytestring_lh-llm directory
+
+prefix=./Data/ByteString;
+stack exec ghc -- -fplugin=LiquidHaskell $prefix/*.hs;
+bash ./my-scripts/bash/clean $prefix;

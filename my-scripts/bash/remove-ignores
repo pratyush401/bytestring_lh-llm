@@ -1,0 +1,10 @@
+#!/usr/bin/bash
+
+prefix="./Data/ByteString"
+sed -i '' '/{-@ ignore.*@-}/d' $prefix/src/*.hs
+
+# add ignore
+# sed -i '' 's/{-@/{-@ ignore/g' src/*.hs
+
+# reverse: remove ignores
+# sed -i '' 's/{-@ ignore/{-@/g' src/*.hs

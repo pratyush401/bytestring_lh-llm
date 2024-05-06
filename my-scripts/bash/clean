@@ -1,0 +1,6 @@
+#!/usr/bin/bash
+
+prefix=$1;
+rm -r ${prefix}/.liquid
+rm ${prefix}/*.hi
+rm ${prefix}/*.o 

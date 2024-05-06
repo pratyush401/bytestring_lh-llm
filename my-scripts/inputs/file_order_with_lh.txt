@@ -1,0 +1,9 @@
+Data/ByteString/Builder/Prim/Internal.hs
+Data/ByteString/Builder/Prim/Internal/Base16.hs
+Data/ByteString/Builder/Prim/Internal/Floating.hs
+Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs
+Data/ByteString/Builder/Prim/Binary.hs
+Data/ByteString/Builder/RealFloat/TableGenerator.hs
+Data/ByteString/Utils/ByteOrder.hs
+Data/ByteString/Utils/UnalignedAccess.hs
+Data/LiquidPtr.hs
