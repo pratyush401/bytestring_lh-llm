@@ -1,7 +1,294 @@
+bytestring-lh> configure (lib)
+Configuring bytestring-lh-0.13.0.0...
 bytestring-lh> build (lib)
 Preprocessing library for bytestring-lh-0.13.0.0..
 Building library for bytestring-lh-0.13.0.0..
-[10 of 34] Compiling Data.ByteString.Internal.Pure
+[ 1 of 34] Compiling Data.ByteString.Builder.Prim.Internal
+WARNING: Found false in Data/ByteString/Builder/Prim/Internal.hs:222:49-50
+WARNING: Found false in Data/ByteString/Builder/Prim/Internal.hs:223:21-22
+WARNING: Found false in Data/ByteString/Builder/Prim/Internal.hs:223:96-97
+WARNING: Found false in Data/ByteString/Builder/Prim/Internal.hs:224:20-21
+WARNING: Found false in Data/ByteString/Builder/Prim/Internal.hs:224:36-37
+WARNING: Found false in Data/ByteString/Builder/Prim/Internal.hs:224:48-49
+[1;92m
+**** LIQUID: SAFE (249 constraints checked) ************************************
+[0m[ 2 of 34] Compiling Data.ByteString.Builder.Prim.Internal.Base16
+[1;93m
+**** LIQUID: SAFE (0 constraints checked) **************************************
+[0m[ 3 of 34] Compiling Data.ByteString.Builder.Prim.Internal.Floating
+WARNING: Found false in Data/ByteString/Builder/Prim/Internal/Floating.hs:42:45-46
+WARNING: Found false in Data/ByteString/Builder/Prim/Internal/Floating.hs:43:21-22
+WARNING: Found false in Data/ByteString/Builder/Prim/Internal/Floating.hs:44:27-28
+WARNING: Found false in Data/ByteString/Builder/Prim/Internal/Floating.hs:45:21-22
+WARNING: Found false in Data/ByteString/Builder/Prim/Internal/Floating.hs:55:45-46
+WARNING: Found false in Data/ByteString/Builder/Prim/Internal/Floating.hs:56:21-22
+WARNING: Found false in Data/ByteString/Builder/Prim/Internal/Floating.hs:57:27-28
+WARNING: Found false in Data/ByteString/Builder/Prim/Internal/Floating.hs:58:21-22
+[1;92m
+**** LIQUID: SAFE (31 constraints checked) *************************************
+[0m[ 4 of 34] Compiling Data.ByteString.Builder.Prim.Internal.UncheckedShifts
+[1;92m
+**** LIQUID: SAFE (1 constraints checked) **************************************
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs:74:18: warning: [-Wunused-matches]
+    Defined but not used: ‘w’
+   |
+74 | shiftr_w16 (W16# w) (I# i) = W16# (undefined "TODO:LH") {- (w `uncheckedShiftRL#`   i) -}
+   |                  ^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs:74:25: warning: [-Wunused-matches]
+    Defined but not used: ‘i’
+   |
+74 | shiftr_w16 (W16# w) (I# i) = W16# (undefined "TODO:LH") {- (w `uncheckedShiftRL#`   i) -}
+   |                         ^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs:75:18: warning: [-Wunused-matches]
+    Defined but not used: ‘w’
+   |
+75 | shiftr_w32 (W32# w) (I# i) = W32# (undefined "TODO:LH") {- (w `uncheckedShiftRL#`   i) -}
+   |                  ^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs:75:25: warning: [-Wunused-matches]
+    Defined but not used: ‘i’
+   |
+75 | shiftr_w32 (W32# w) (I# i) = W32# (undefined "TODO:LH") {- (w `uncheckedShiftRL#`   i) -}
+   |                         ^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs:101:8: warning: [-Wdeprecations]
+    In the use of ‘bitSize’
+    (imported from Foreign, but defined in GHC.Bits):
+    Deprecated: "Use 'bitSizeMaybe' or 'finiteBitSize' instead"
+    |
+101 |   case bitSize (undefined :: Word) of
+    |        ^^^^^^^
+[0m[ 5 of 34] Compiling Data.ByteString.Builder.Prim.Binary
+[1;92m
+**** LIQUID: SAFE (58 constraints checked) *************************************
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Builder/Prim/Binary.hs:76:9: warning: [-Wdeprecations]
+    In the use of ‘storableToF’
+    (imported from Data.ByteString.Builder.Prim.Internal):
+    Deprecated: "Deprecated since @bytestring-0.12.1.0@.
+
+This function is dangerous in the presence of internal padding
+and makes naive assumptions about alignment.
+
+ * For a primitive Haskell type like 'Int64', use the
+   corresponding primitive like 'Data.ByteString.Builder.Prim.int64Host'.
+ * For other types, it is recommended to manually write a small
+   function that performs the necessary unaligned write
+   and zeroes or removes any internal padding bits."
+   |
+76 | word8 = storableToF
+   |         ^^^^^^^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Builder/Prim/Binary.hs:211:12: warning: [-Wdeprecations]
+    In the use of ‘storableToF’
+    (imported from Data.ByteString.Builder.Prim.Internal):
+    Deprecated: "Deprecated since @bytestring-0.12.1.0@.
+
+This function is dangerous in the presence of internal padding
+and makes naive assumptions about alignment.
+
+ * For a primitive Haskell type like 'Int64', use the
+   corresponding primitive like 'Data.ByteString.Builder.Prim.int64Host'.
+ * For other types, it is recommended to manually write a small
+   function that performs the necessary unaligned write
+   and zeroes or removes any internal padding bits."
+    |
+211 | wordHost = storableToF
+    |            ^^^^^^^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Builder/Prim/Binary.hs:216:14: warning: [-Wdeprecations]
+    In the use of ‘storableToF’
+    (imported from Data.ByteString.Builder.Prim.Internal):
+    Deprecated: "Deprecated since @bytestring-0.12.1.0@.
+
+This function is dangerous in the presence of internal padding
+and makes naive assumptions about alignment.
+
+ * For a primitive Haskell type like 'Int64', use the
+   corresponding primitive like 'Data.ByteString.Builder.Prim.int64Host'.
+ * For other types, it is recommended to manually write a small
+   function that performs the necessary unaligned write
+   and zeroes or removes any internal padding bits."
+    |
+216 | word16Host = storableToF
+    |              ^^^^^^^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Builder/Prim/Binary.hs:221:14: warning: [-Wdeprecations]
+    In the use of ‘storableToF’
+    (imported from Data.ByteString.Builder.Prim.Internal):
+    Deprecated: "Deprecated since @bytestring-0.12.1.0@.
+
+This function is dangerous in the presence of internal padding
+and makes naive assumptions about alignment.
+
+ * For a primitive Haskell type like 'Int64', use the
+   corresponding primitive like 'Data.ByteString.Builder.Prim.int64Host'.
+ * For other types, it is recommended to manually write a small
+   function that performs the necessary unaligned write
+   and zeroes or removes any internal padding bits."
+    |
+221 | word32Host = storableToF
+    |              ^^^^^^^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Builder/Prim/Binary.hs:226:14: warning: [-Wdeprecations]
+    In the use of ‘storableToF’
+    (imported from Data.ByteString.Builder.Prim.Internal):
+    Deprecated: "Deprecated since @bytestring-0.12.1.0@.
+
+This function is dangerous in the presence of internal padding
+and makes naive assumptions about alignment.
+
+ * For a primitive Haskell type like 'Int64', use the
+   corresponding primitive like 'Data.ByteString.Builder.Prim.int64Host'.
+ * For other types, it is recommended to manually write a small
+   function that performs the necessary unaligned write
+   and zeroes or removes any internal padding bits."
+    |
+226 | word64Host = storableToF
+    |              ^^^^^^^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Builder/Prim/Binary.hs:283:11: warning: [-Wdeprecations]
+    In the use of ‘storableToF’
+    (imported from Data.ByteString.Builder.Prim.Internal):
+    Deprecated: "Deprecated since @bytestring-0.12.1.0@.
+
+This function is dangerous in the presence of internal padding
+and makes naive assumptions about alignment.
+
+ * For a primitive Haskell type like 'Int64', use the
+   corresponding primitive like 'Data.ByteString.Builder.Prim.int64Host'.
+ * For other types, it is recommended to manually write a small
+   function that performs the necessary unaligned write
+   and zeroes or removes any internal padding bits."
+    |
+283 | intHost = storableToF
+    |           ^^^^^^^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Builder/Prim/Binary.hs:288:13: warning: [-Wdeprecations]
+    In the use of ‘storableToF’
+    (imported from Data.ByteString.Builder.Prim.Internal):
+    Deprecated: "Deprecated since @bytestring-0.12.1.0@.
+
+This function is dangerous in the presence of internal padding
+and makes naive assumptions about alignment.
+
+ * For a primitive Haskell type like 'Int64', use the
+   corresponding primitive like 'Data.ByteString.Builder.Prim.int64Host'.
+ * For other types, it is recommended to manually write a small
+   function that performs the necessary unaligned write
+   and zeroes or removes any internal padding bits."
+    |
+288 | int16Host = storableToF
+    |             ^^^^^^^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Builder/Prim/Binary.hs:293:13: warning: [-Wdeprecations]
+    In the use of ‘storableToF’
+    (imported from Data.ByteString.Builder.Prim.Internal):
+    Deprecated: "Deprecated since @bytestring-0.12.1.0@.
+
+This function is dangerous in the presence of internal padding
+and makes naive assumptions about alignment.
+
+ * For a primitive Haskell type like 'Int64', use the
+   corresponding primitive like 'Data.ByteString.Builder.Prim.int64Host'.
+ * For other types, it is recommended to manually write a small
+   function that performs the necessary unaligned write
+   and zeroes or removes any internal padding bits."
+    |
+293 | int32Host = storableToF
+    |             ^^^^^^^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Builder/Prim/Binary.hs:298:13: warning: [-Wdeprecations]
+    In the use of ‘storableToF’
+    (imported from Data.ByteString.Builder.Prim.Internal):
+    Deprecated: "Deprecated since @bytestring-0.12.1.0@.
+
+This function is dangerous in the presence of internal padding
+and makes naive assumptions about alignment.
+
+ * For a primitive Haskell type like 'Int64', use the
+   corresponding primitive like 'Data.ByteString.Builder.Prim.int64Host'.
+ * For other types, it is recommended to manually write a small
+   function that performs the necessary unaligned write
+   and zeroes or removes any internal padding bits."
+    |
+298 | int64Host = storableToF
+    |             ^^^^^^^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Builder/Prim/Binary.hs:329:13: warning: [-Wdeprecations]
+    In the use of ‘storableToF’
+    (imported from Data.ByteString.Builder.Prim.Internal):
+    Deprecated: "Deprecated since @bytestring-0.12.1.0@.
+
+This function is dangerous in the presence of internal padding
+and makes naive assumptions about alignment.
+
+ * For a primitive Haskell type like 'Int64', use the
+   corresponding primitive like 'Data.ByteString.Builder.Prim.int64Host'.
+ * For other types, it is recommended to manually write a small
+   function that performs the necessary unaligned write
+   and zeroes or removes any internal padding bits."
+    |
+329 | floatHost = storableToF
+    |             ^^^^^^^^^^^
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/ByteString/Builder/Prim/Binary.hs:334:14: warning: [-Wdeprecations]
+    In the use of ‘storableToF’
+    (imported from Data.ByteString.Builder.Prim.Internal):
+    Deprecated: "Deprecated since @bytestring-0.12.1.0@.
+
+This function is dangerous in the presence of internal padding
+and makes naive assumptions about alignment.
+
+ * For a primitive Haskell type like 'Int64', use the
+   corresponding primitive like 'Data.ByteString.Builder.Prim.int64Host'.
+ * For other types, it is recommended to manually write a small
+   function that performs the necessary unaligned write
+   and zeroes or removes any internal padding bits."
+    |
+334 | doubleHost = storableToF
+    |              ^^^^^^^^^^^
+[0m[ 6 of 34] Compiling Data.ByteString.Builder.RealFloat.TableGenerator
+WARNING: Found false in Data/ByteString/Builder/RealFloat/TableGenerator.hs:146:14-30
+WARNING: Found false in Data/ByteString/Builder/RealFloat/TableGenerator.hs:146:20
+WARNING: Found false in Data/ByteString/Builder/RealFloat/TableGenerator.hs:152:20-25
+WARNING: Found false in Data/ByteString/Builder/RealFloat/TableGenerator.hs:158:11-16
+WARNING: Found false in Data/ByteString/Builder/RealFloat/TableGenerator.hs:189:11
+WARNING: Found false in Data/ByteString/Builder/RealFloat/TableGenerator.hs:190:8-11
+WARNING: Found false in Data/ByteString/Builder/RealFloat/TableGenerator.hs:190:14-17
+WARNING: Found false in Data/ByteString/Builder/RealFloat/TableGenerator.hs:190:33
+WARNING: Found false in Data/ByteString/Builder/RealFloat/TableGenerator.hs:191:36
+WARNING: Found false in Data/ByteString/Builder/RealFloat/TableGenerator.hs:192:15-18
+WARNING: Found false in Data/ByteString/Builder/RealFloat/TableGenerator.hs:193:15-18
+WARNING: Found false in Data/ByteString/Builder/RealFloat/TableGenerator.hs:199:52-71
+WARNING: Found false in Data/ByteString/Builder/RealFloat/TableGenerator.hs:205:10
+WARNING: Found false in Data/ByteString/Builder/RealFloat/TableGenerator.hs:205:13-14
+WARNING: Found false in Data/ByteString/Builder/RealFloat/TableGenerator.hs:205:29-49
+WARNING: Found false in Data/ByteString/Builder/RealFloat/TableGenerator.hs:206:10
+WARNING: Found false in Data/ByteString/Builder/RealFloat/TableGenerator.hs:206:17-18
+[1;92m
+**** LIQUID: SAFE (1036 constraints checked) ***********************************
+[0m[ 7 of 34] Compiling Data.ByteString.Utils.ByteOrder
+[1;93m
+**** LIQUID: SAFE (0 constraints checked) **************************************
+[0m[ 8 of 34] Compiling Data.ByteString.Utils.UnalignedAccess
+[1;93m
+**** LIQUID: SAFE (0 constraints checked) **************************************
+[0m[ 9 of 34] Compiling Data.LiquidPtr
+[1;93m
+**** LIQUID: SAFE (0 constraints checked) **************************************
+
+/Users/pratyushsahu/Desktop/Research/bytestring_lh-llm/Data/LiquidPtr.hs:14:1: warning: [-Wunused-imports]
+    The qualified import of ‘Foreign.C.String’ is redundant
+      except perhaps to import instances from ‘Foreign.C.String’
+    To import instances alone, use: import Foreign.C.String()
+   |
+14 | import qualified Foreign.C.String
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[0m[10 of 34] Compiling Data.ByteString.Internal.Pure
 WARNING: Found false in Data/ByteString/Internal/Pure.hs:340:13
 WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
 [1;91m
@@ -11,13 +298,13 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
     Liquid Type Mismatch
     .
     The inferred type
-      VV : {v : GHC.Types.Int | v == ?e + (1 : int)}
+      VV : {v : GHC.Types.Int | v == ?d + (1 : int)}
     .
     is not a subtype of the required type
       VV : {VV : GHC.Types.Int | VV < n}
     .
     in the context
-      ?e : GHC.Prim.Int#
+      ?d : GHC.Prim.Int#
        
       n : {n : GHC.Types.Int | n >= 0}
     Constraint id 620
@@ -85,7 +372,7 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
       i : {i : GHC.Types.Int | i >= 0
                                && pbase p <= p}
        
-      ?b : GHC.Prim.Int#
+      ?d : GHC.Prim.Int#
        
       p : {p : (GHC.Ptr.Ptr GHC.Word.Word8) | 0 < (pbase p + plen (pbase p)) - p
                                               && pbase p <= p}
@@ -107,7 +394,7 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
       i : {i : GHC.Types.Int | i >= 0
                                && pbase p <= p}
        
-      ?a : GHC.Prim.Int#
+      ?b : GHC.Prim.Int#
        
       p : {p : (GHC.Ptr.Ptr GHC.Word.Word8) | 0 < (pbase p + plen (pbase p)) - p
                                               && pbase p <= p}
@@ -139,13 +426,13 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
     .
     The inferred type
       VV : {v : (GHC.Ptr.Ptr GHC.Word.Word8) | v == dst
-                                               && v == GHC.Ptr.Ptr ?a}
+                                               && v == GHC.Ptr.Ptr ?b}
     .
     is not a subtype of the required type
       VV : {VV : (GHC.Ptr.Ptr GHC.Word.Word8) | pbase VV <= VV}
     .
     in the context
-      ?a : GHC.Prim.Addr#
+      ?b : GHC.Prim.Addr#
        
       dst : (GHC.Ptr.Ptr GHC.Word.Word8)
     Constraint id 356
@@ -206,7 +493,7 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
       VV : {VV : GHC.Types.Int | pbase p <= p}
     .
     in the context
-      ?c : GHC.Prim.Addr#
+      ?a : GHC.Prim.Addr#
        
       p : (GHC.Ptr.Ptr GHC.Word.Word8)
     Constraint id 438
@@ -248,7 +535,7 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
       VV : {VV : GHC.Types.Int | pbase p <= p}
     .
     in the context
-      ?b : GHC.Prim.Addr#
+      ?d : GHC.Prim.Addr#
        
       p : (GHC.Ptr.Ptr GHC.Word.Word8)
     Constraint id 471
@@ -279,19 +566,19 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
     Liquid Type Mismatch
     .
     The inferred type
-      VV : {v : GHC.Types.Int | v == ?d
+      VV : {v : GHC.Types.Int | v == ?c
                                 && v == high
-                                && v == (?d : int)}
+                                && v == (?c : int)}
     .
     is not a subtype of the required type
       VV : {VV : GHC.Types.Int | pbase p <= p}
     .
     in the context
+      ?c : GHC.Prim.Int#
+       
       high : GHC.Types.Int
        
-      ?b : GHC.Prim.Addr#
-       
-      ?d : GHC.Prim.Int#
+      ?a : GHC.Prim.Addr#
        
       p : (GHC.Ptr.Ptr GHC.Word.Word8)
     Constraint id 506
@@ -367,10 +654,10 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
     Liquid Type Mismatch
     .
     The inferred type
-      VV : {v : GHC.Types.Int | v == ?f
+      VV : {v : GHC.Types.Int | v == ?d
                                 && v == j
-                                && v == (?f : int)
-                                && v >= ?e
+                                && v == (?d : int)
+                                && v >= ?b
                                 && v >= i
                                 && v >= low
                                 && pbase p <= p}
@@ -379,22 +666,22 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
       VV : {VV : GHC.Types.Int | VV >= 0}
     .
     in the context
-      ?e : GHC.Prim.Int#
+      ?e : GHC.Prim.Addr#
        
       low : GHC.Types.Int
        
-      i : {i : GHC.Types.Int | i >= ?e
+      i : {i : GHC.Types.Int | i >= ?b
                                && i >= low
                                && pbase p <= p}
        
-      ?b : GHC.Prim.Addr#
+      ?b : GHC.Prim.Int#
        
-      j : {j : GHC.Types.Int | j >= ?e
+      j : {j : GHC.Types.Int | j >= ?b
                                && j >= i
                                && j >= low
                                && pbase p <= p}
        
-      ?f : GHC.Prim.Int#
+      ?d : GHC.Prim.Int#
        
       p : {p : (GHC.Ptr.Ptr GHC.Word.Word8) | 0 < (pbase p + plen (pbase p)) - p
                                               && pbase p <= p}
@@ -407,10 +694,10 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
     Liquid Type Mismatch
     .
     The inferred type
-      VV : {v : GHC.Types.Int | v == ?d
+      VV : {v : GHC.Types.Int | v == ?b
                                 && v == i
-                                && v == (?d : int)
-                                && v >= ?f
+                                && v == (?b : int)
+                                && v >= ?c
                                 && v >= low
                                 && pbase p <= p}
     .
@@ -418,17 +705,17 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
       VV : {VV : GHC.Types.Int | VV >= 0}
     .
     in the context
-      ?c : GHC.Prim.Addr#
+      ?c : GHC.Prim.Int#
        
       low : GHC.Types.Int
        
-      i : {i : GHC.Types.Int | i >= ?f
+      i : {i : GHC.Types.Int | i >= ?c
                                && i >= low
                                && pbase p <= p}
        
-      ?d : GHC.Prim.Int#
+      ?b : GHC.Prim.Int#
        
-      ?f : GHC.Prim.Int#
+      ?d : GHC.Prim.Addr#
        
       p : {p : (GHC.Ptr.Ptr GHC.Word.Word8) | 0 < (pbase p + plen (pbase p)) - p
                                               && pbase p <= p}
@@ -441,10 +728,10 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
     Liquid Type Mismatch
     .
     The inferred type
-      VV : {v : GHC.Types.Int | v == ?f
+      VV : {v : GHC.Types.Int | v == ?d
                                 && v == j
-                                && v == (?f : int)
-                                && v >= ?e
+                                && v == (?d : int)
+                                && v >= ?b
                                 && v >= i
                                 && v >= low
                                 && pbase p <= p}
@@ -453,22 +740,22 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
       VV : {VV : GHC.Types.Int | VV >= 0}
     .
     in the context
-      ?e : GHC.Prim.Int#
+      ?e : GHC.Prim.Addr#
        
       low : GHC.Types.Int
        
-      i : {i : GHC.Types.Int | i >= ?e
+      i : {i : GHC.Types.Int | i >= ?b
                                && i >= low
                                && pbase p <= p}
        
-      ?b : GHC.Prim.Addr#
+      ?b : GHC.Prim.Int#
        
-      j : {j : GHC.Types.Int | j >= ?e
+      j : {j : GHC.Types.Int | j >= ?b
                                && j >= i
                                && j >= low
                                && pbase p <= p}
        
-      ?f : GHC.Prim.Int#
+      ?d : GHC.Prim.Int#
        
       p : {p : (GHC.Ptr.Ptr GHC.Word.Word8) | 0 < (pbase p + plen (pbase p)) - p
                                               && pbase p <= p}
@@ -481,10 +768,10 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
     Liquid Type Mismatch
     .
     The inferred type
-      VV : {v : GHC.Types.Int | v == ?d
+      VV : {v : GHC.Types.Int | v == ?b
                                 && v == i
-                                && v == (?d : int)
-                                && v >= ?f
+                                && v == (?b : int)
+                                && v >= ?c
                                 && v >= low
                                 && pbase p <= p}
     .
@@ -492,17 +779,17 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
       VV : {VV : GHC.Types.Int | VV >= 0}
     .
     in the context
-      ?c : GHC.Prim.Addr#
+      ?c : GHC.Prim.Int#
        
       low : GHC.Types.Int
        
-      i : {i : GHC.Types.Int | i >= ?f
+      i : {i : GHC.Types.Int | i >= ?c
                                && i >= low
                                && pbase p <= p}
        
-      ?d : GHC.Prim.Int#
+      ?b : GHC.Prim.Int#
        
-      ?f : GHC.Prim.Int#
+      ?d : GHC.Prim.Addr#
        
       p : {p : (GHC.Ptr.Ptr GHC.Word.Word8) | 0 < (pbase p + plen (pbase p)) - p
                                               && pbase p <= p}
@@ -521,17 +808,17 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
       VV : {VV : GHC.Types.Int | VV < i}
     .
     in the context
-      ?i : GHC.Prim.Int#
+      ?e : GHC.Prim.Int#
        
       low : GHC.Types.Int
        
-      i : {i : GHC.Types.Int | i >= ?i
+      i : {i : GHC.Types.Int | i >= ?e
                                && i >= low
                                && pbase p <= p}
        
-      ?g : GHC.Prim.Int#
+      ?g : GHC.Prim.Addr#
        
-      ?f : GHC.Prim.Addr#
+      ?d : GHC.Prim.Int#
        
       p : {p : (GHC.Ptr.Ptr GHC.Word.Word8) | 0 < (pbase p + plen (pbase p)) - p
                                               && pbase p <= p}
@@ -544,10 +831,10 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
     Liquid Type Mismatch
     .
     The inferred type
-      VV : {v : GHC.Types.Int | v == ?d
+      VV : {v : GHC.Types.Int | v == ?b
                                 && v == i
-                                && v == (?d : int)
-                                && v >= ?f
+                                && v == (?b : int)
+                                && v >= ?c
                                 && v >= low
                                 && pbase p <= p}
     .
@@ -555,17 +842,17 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
       VV : {VV : GHC.Types.Int | VV < i}
     .
     in the context
-      ?c : GHC.Prim.Addr#
+      ?c : GHC.Prim.Int#
        
       low : GHC.Types.Int
        
-      i : {i : GHC.Types.Int | i >= ?f
+      i : {i : GHC.Types.Int | i >= ?c
                                && i >= low
                                && pbase p <= p}
        
-      ?d : GHC.Prim.Int#
+      ?b : GHC.Prim.Int#
        
-      ?f : GHC.Prim.Int#
+      ?d : GHC.Prim.Addr#
        
       p : {p : (GHC.Ptr.Ptr GHC.Word.Word8) | 0 < (pbase p + plen (pbase p)) - p
                                               && pbase p <= p}
@@ -586,7 +873,7 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
     in the context
       i : {i : GHC.Types.Int | i >= 0}
        
-      ?d : GHC.Prim.Int#
+      ?b : GHC.Prim.Int#
     Constraint id 673
     |
 259 |             if | b0 <= 0x7F -> go (i+1) -- ASCII
@@ -638,9 +925,9 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
       VV : {VV : GHC.Types.Int | VV < i}
     .
     in the context
-      i : {i : GHC.Types.Int | i >= 0}
+      ?c : GHC.Prim.Int#
        
-      ?b : GHC.Prim.Int#
+      i : {i : GHC.Types.Int | i >= 0}
     Constraint id 689
     |
 262 |                | otherwise                -> go4 (i+1) b0
@@ -656,9 +943,9 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
       VV : {VV : GHC.Types.Int | VV < i}
     .
     in the context
-      ?e : GHC.Prim.Int#
-       
       i : {i : GHC.Types.Int | i >= 0}
+       
+      ?d : GHC.Prim.Int#
     Constraint id 706
     |
 269 |       = go (i+1)
@@ -678,14 +965,14 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
                                && i > 0
                                && i >= 0
                                && i >= 1
-                               && i <= ?a
+                               && i <= ?f
                                && i <= len}
        
       len : GHC.Types.Int
        
-      ?f : GHC.Prim.Int#
+      ?d : GHC.Prim.Int#
        
-      ?a : GHC.Prim.Int#
+      ?f : GHC.Prim.Int#
     Constraint id 718
     |
 284 |       = go (i+2)
@@ -701,18 +988,18 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
       VV : {VV : GHC.Types.Int | VV < i}
     .
     in the context
+      ?c : GHC.Prim.Int#
+       
+      ?e : GHC.Prim.Int#
+       
       i : {i : GHC.Types.Int | i /= 0
                                && i > 0
                                && i >= 0
                                && i >= 1
-                               && i <= ?a
+                               && i <= ?e
                                && i <= len}
        
-      ?b : GHC.Prim.Int#
-       
       len : GHC.Types.Int
-       
-      ?a : GHC.Prim.Int#
     Constraint id 756
     |
 299 |       = go (i+3)
@@ -722,9 +1009,9 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
     Liquid Type Mismatch
     .
     The inferred type
-      VV : {v : GHC.Types.Int | v == ?a
+      VV : {v : GHC.Types.Int | v == ?b
                                 && v == off
-                                && v == (?a : int)
+                                && v == (?b : int)
                                 && v < (pbase addr + plen (pbase addr)) - addr
                                 && pbase addr <= addr}
     .
@@ -735,9 +1022,9 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
       off : {off : GHC.Types.Int | off < (pbase addr + plen (pbase addr)) - addr
                                    && pbase addr <= addr}
        
-      addr : (GHC.Ptr.Ptr a)
+      ?b : GHC.Prim.Int#
        
-      ?a : GHC.Prim.Int#
+      addr : (GHC.Ptr.Ptr a)
     Constraint id 610
     |
 317 | putDigit !addr !off !i = Data.LiquidPtr.pokeByteOff addr off (getDigit i)
@@ -747,20 +1034,20 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
     Liquid Type Mismatch
     .
     The inferred type
-      VV : {v : GHC.Types.Int | v == ?c - (1 : int)}
+      VV : {v : GHC.Types.Int | v == ?e - (1 : int)}
     .
     is not a subtype of the required type
       VV : {VV : GHC.Types.Int | VV < (pbase buf + plen (pbase buf)) - buf}
     .
     in the context
-      ?c : GHC.Prim.Int#
+      ?e : GHC.Prim.Int#
+       
+      ?b : GHC.Prim.Addr#
        
       max_width : {max_width : GHC.Types.Int | max_width >= 1}
        
       buf : {buf : (GHC.Ptr.Ptr GHC.Word.Word8) | 0 < (pbase buf + plen (pbase buf)) - buf
                                                   && pbase buf <= buf}
-       
-      ?a : GHC.Prim.Addr#
     Constraint id 597
     |
 377 |   putDigit buf (max_width - 1) (fromIntegral r)
@@ -770,31 +1057,31 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
     Liquid Type Mismatch
     .
     The inferred type
-      VV : {v : GHC.Types.Int | v == ?c - (1 : int)}
+      VV : {v : GHC.Types.Int | v == ?h - (1 : int)}
     .
     is not a subtype of the required type
       VV : {VV : GHC.Types.Int | VV < (pbase buf + plen (pbase buf)) - buf}
     .
     in the context
-      ?c : {?c : GHC.Types.Int | ?c /= ?e
-                                 && ?c /= max_width
-                                 && ?c >= 0
-                                 && ?c >= (0 : int)
-                                 && ?c < ?e
-                                 && ?c < max_width
-                                 && ?c <= ?e
-                                 && ?c <= max_width
-                                 && ?c <= ?e - (1 : int)
-                                 && pbase buf <= buf}
+      ?n : GHC.Prim.Int#
        
-      ?e : GHC.Prim.Int#
+      ?g : GHC.Prim.Addr#
+       
+      ?h : {?h : GHC.Types.Int | ?h /= ?n
+                                 && ?h /= max_width
+                                 && ?h >= 0
+                                 && ?h >= (0 : int)
+                                 && ?h < ?n
+                                 && ?h < max_width
+                                 && ?h <= ?n
+                                 && ?h <= max_width
+                                 && ?h <= ?n - (1 : int)
+                                 && pbase buf <= buf}
        
       max_width : {max_width : GHC.Types.Int | max_width >= 1}
        
       buf : {buf : (GHC.Ptr.Ptr GHC.Word.Word8) | 0 < (pbase buf + plen (pbase buf)) - buf
                                                   && pbase buf <= buf}
-       
-      ?a : GHC.Prim.Addr#
     Constraint id 585
     |
 382 |             pad n = putDigit buf (n - 1) 0 >> pad (n - 1)
@@ -804,13 +1091,13 @@ WARNING: Found false in Data/ByteString/Internal/Pure.hs:341:39
     Liquid Type Mismatch
     .
     The inferred type
-      VV : {v : GHC.Types.Int | v == ?b - (1 : int)}
+      VV : {v : GHC.Types.Int | v == ?e - (1 : int)}
     .
     is not a subtype of the required type
       VV : {VV : GHC.Types.Int | VV >= 1}
     .
     in the context
-      ?b : GHC.Prim.Int#
+      ?e : GHC.Prim.Int#
        
       max_width : {max_width : GHC.Types.Int | max_width >= 1}
     Constraint id 593

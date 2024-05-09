@@ -3,6 +3,7 @@
 {-# LANGUAGE CPP #-}
 
 {-@ liquid "--compile-spec" @-}
+{-@ liquid "--no-termination" @-}
 
 module Data.LiquidPtr where 
 

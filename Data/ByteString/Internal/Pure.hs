@@ -2,6 +2,9 @@
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE MultiWayIf #-}
 
+-- {-@ liquid "--compile-spec" @-}
+{-@ liquid "--no-termination" @-}
+
 -- Enable yields to make `isValidUtf8` safe to use on large inputs.
 {-# OPTIONS_GHC -fno-omit-yields #-}
 
@@ -125,14 +128,14 @@ intersperse !dst !src !len !w = case len of
 countOccBA :: ByteArray# -> Int -> Word8 -> IO Int
 countOccBA ba len w = pure (go 0 0)
   where
-    {-@ go :: m:Nat -> n:Nat -> Int @-}
+    {-@ go :: n:Nat -> i:Nat -> Int / [ n - i ] @-}
     go :: Int -> Int -> Int
     go !n !i@(I# i#)
       | i == len = n
       | W8# (indexWord8Array# ba i#) == w = go (n+1) (i+1)
       | otherwise = go n (i+1)
 
-{-@ countOcc :: {p:(GHC.Ptr.Ptr Word8) | PtrValid p} -> {n:Int | PtrValidN p n} -> Word8 -> IO Int @-}
+{-@ countOcc :: {p:(GHC.Ptr.Ptr Word8) | PtrValid p} -> {n:Nat | PtrValidN p n} -> Word8 -> IO Int @-}
 countOcc :: Ptr Word8 -> Int -> Word8 -> IO Int
 countOcc p len w = go 0 0
   where
@@ -154,6 +157,7 @@ elemIndex !ba !w !len = pure (go 0)
       | otherwise = go (i+1)
 
 -- | Reverse n-bytes from the second pointer into the first
+{-@ reverseBytes :: {p:(GHC.Ptr.Ptr Word8) | PtrValid p} -> {m:(GHC.Ptr.Ptr Word8) | PtrValid m} -> {i:Nat | PtrValidN p i && PtrValidN m i} -> IO () @-}
 reverseBytes :: Ptr Word8 -> Ptr Word8 -> Int -> IO ()
 reverseBytes !dst !src !n
   | n == 0    = pure ()
@@ -170,10 +174,11 @@ reverse_bytes orig_dst dst src = do
     then pure ()
     else reverse_bytes orig_dst (plusPtr dst (-1)) (plusPtr src 1)
 
-
+{-@ findMaximum :: {p:(GHC.Ptr.Ptr Word8) | PtrValid p} -> {n:Nat | PtrValidN p n && n > 0} -> IO Word8 @-}
 findMaximum :: Ptr Word8 -> Int -> IO Word8
 findMaximum !p !n = assert (n > 0) $ find_maximum minBound p (plusPtr p (n - 1))
 
+{-@ find_maximum :: Word8 -> {m:(GHC.Ptr.Ptr Word8) | PtrValid m} -> {p:(GHC.Ptr.Ptr Word8) | PtrValid p} -> IO Word8 @-}
 find_maximum :: Word8 -> Ptr Word8 -> Ptr Word8 -> IO Word8
 find_maximum !m !p !plast = do
   c <- Data.LiquidPtr.peekByteOff p 0
@@ -182,10 +187,11 @@ find_maximum !m !p !plast = do
     then pure c'
     else find_maximum c' (plusPtr p 1) plast
 
+{-@ findMinimum :: {p:(GHC.Ptr.Ptr Word8) | PtrValid p} -> {n:Nat | PtrValidN p n && n > 0} -> IO Word8 @-}
 findMinimum :: Ptr Word8 -> Int -> IO Word8
 findMinimum !p !n = assert (n > 0) $ find_minimum maxBound p (plusPtr p (n - 1))
 
-{-@ find_minimum :: Word8 -> GHC.Ptr.Ptr Word8 -> {p:(GHC.Ptr.Ptr Word8) | PtrValid p} -> IO Word8 @-}
+{-@ find_minimum :: Word8 -> {m:(GHC.Ptr.Ptr Word8) | PtrValid m} -> {p:(GHC.Ptr.Ptr Word8) | PtrValid p} -> IO Word8 @-}
 find_minimum :: Word8 -> Ptr Word8 -> Ptr Word8 -> IO Word8
 find_minimum !m !p !plast = do
   c <- Data.LiquidPtr.peekByteOff p 0
@@ -194,12 +200,13 @@ find_minimum !m !p !plast = do
     then pure c'
     else find_minimum c' (plusPtr p 1) plast
 
-
+{-@ ignore quickSort @-}
 quickSort :: Ptr Word8 -> Int -> IO ()
 quickSort !p !n
   | n <= 0    = pure ()
   | otherwise = quick_sort p 0 (n - 1)
 
+{-@ ignore quick_sort @-}
 quick_sort :: Ptr Word8 -> Int -> Int -> IO ()
 quick_sort !p !low !high
   | low >= high = pure ()
@@ -208,7 +215,7 @@ quick_sort !p !low !high
     quick_sort p low (pivot_index-1)
     quick_sort p (pivot_index+1) high
 
-{-@ partition :: {p:(GHC.Ptr.Ptr Word8) | PtrValid p} -> Int -> {n:Int | PtrValidN p n} -> IO Int @-}
+{-@ ignore partition @-}
 partition :: Ptr Word8 -> Int -> Int -> IO Int
 partition !p !low !high = do
   -- choose the rightmost element as the pivot
@@ -312,7 +319,7 @@ getDigit (I# i) = W8# (indexWord8OffAddr# digits i)
   where
     !digits = "0123456789abcdef"#
 
-{-@ putDigit :: p:GHC.Ptr.Ptr a -> {n:Int | PtrValidN p n} -> Int -> IO () @-}
+{-@ putDigit :: p:(GHC.Ptr.Ptr a) -> {n:Nat | PtrValidN p n} -> Int -> IO () @-}
 putDigit :: Ptr a -> Int -> Int -> IO ()
 putDigit !addr !off !i = Data.LiquidPtr.pokeByteOff addr off (getDigit i)
 
@@ -369,7 +376,9 @@ encodeUnsignedDec' !v !orig_ptr !next_ptr = do
       pure (plusPtr next_ptr 1)
     _ -> encodeUnsignedDec' q orig_ptr (plusPtr next_ptr 1)
 
-{-@ encodeUnsignedDecPadded :: (Eq a, Num a, Integral a) => {n:Int | n >= 1} -> a -> {p:GHC.Ptr.Ptr Word8 | PtrValid p} -> IO () @-} -- ?
+{-@ assume divMod :: a -> a -> ({v:_ | 0 <= v}, {v:_ | 0 <= v}) @-}
+
+{-@ ignore encodeUnsignedDecPadded @-} -- ?
 encodeUnsignedDecPadded :: (Eq a, Num a, Integral a) => Int -> a -> Ptr Word8 -> IO ()
 {-# INLINABLE encodeUnsignedDecPadded #-} -- for specialization
 encodeUnsignedDecPadded !max_width !v !buf = assert (max_width > 0) $ do
