@@ -7,3 +7,4 @@ Data/ByteString/Builder/RealFloat/TableGenerator.hs
 Data/ByteString/Utils/ByteOrder.hs
 Data/ByteString/Utils/UnalignedAccess.hs
 Data/LiquidPtr.hs
+Data/ByteString/Internal/Pure.hs

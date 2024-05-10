@@ -1,0 +1,438 @@
+{
+    "Data/ByteString/Builder/Prim/Internal.hs--fixedPrim": [],
+    "Data/ByteString/Builder/Prim/Internal.hs--size": [],
+    "Data/ByteString/Builder/Prim/Internal.hs--runF": [],
+    "Data/ByteString/Builder/Prim/Internal.hs--emptyF": [],
+    "Data/ByteString/Builder/Prim/Internal.hs--pairF": [],
+    "Data/ByteString/Builder/Prim/Internal.hs--contramapF": [],
+    "Data/ByteString/Builder/Prim/Internal.hs--toB": [],
+    "Data/ByteString/Builder/Prim/Internal.hs--liftFixedToBounded": [
+        [
+            "toB",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Internal.hs--storableToF": [
+        [
+            "size",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Internal.hs--liftIOF": [],
+    "Data/ByteString/Builder/Prim/Internal.hs--sizeBound": [
+        [
+            "size",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Internal.hs--boundedPrim": [],
+    "Data/ByteString/Builder/Prim/Internal.hs--runB": [],
+    "Data/ByteString/Builder/Prim/Internal.hs--contramapB": [],
+    "Data/ByteString/Builder/Prim/Internal.hs--emptyB": [],
+    "Data/ByteString/Builder/Prim/Internal.hs--pairB": [],
+    "Data/ByteString/Builder/Prim/Internal.hs--eitherB": [],
+    "Data/ByteString/Builder/Prim/Internal.hs--condB": [
+        [
+            "contramapB",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ],
+        [
+            "eitherB",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Internal/Base16.hs--lowerTable": [],
+    "Data/ByteString/Builder/Prim/Internal/Base16.hs--c_lower_hex_table": [],
+    "Data/ByteString/Builder/Prim/Internal/Base16.hs--encode8_as_16h": [],
+    "Data/ByteString/Builder/Prim/Internal/Floating.hs--encodeFloatViaWord32F": [
+        [
+            "fixedPrim",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ],
+        [
+            "size",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ],
+        [
+            "runF",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Internal/Floating.hs--encodeDoubleViaWord64F": [
+        [
+            "fixedPrim",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ],
+        [
+            "size",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ],
+        [
+            "runF",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs--shiftr_w16": [],
+    "Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs--shiftr_w32": [],
+    "Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs--shiftr_w64": [
+        [
+            "shiftr_w32",
+            "Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs--shiftr_w": [
+        [
+            "shiftr_w32",
+            "Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs"
+        ],
+        [
+            "shiftr_w64",
+            "Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs--caseWordSize_32_64": [
+        [
+            "size",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--word8": [
+        [
+            "storableToF",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--word16BE": [
+        [
+            "fixedPrim",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ],
+        [
+            "shiftr_w16",
+            "Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs"
+        ],
+        [
+            "shiftr_w",
+            "Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--word16LE": [
+        [
+            "fixedPrim",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ],
+        [
+            "shiftr_w16",
+            "Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs"
+        ],
+        [
+            "shiftr_w",
+            "Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--word32BE": [
+        [
+            "fixedPrim",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ],
+        [
+            "shiftr_w32",
+            "Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs"
+        ],
+        [
+            "shiftr_w",
+            "Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--word32LE": [
+        [
+            "fixedPrim",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ],
+        [
+            "shiftr_w32",
+            "Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs"
+        ],
+        [
+            "shiftr_w",
+            "Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--word64BE": [
+        [
+            "fixedPrim",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ],
+        [
+            "shiftr_w32",
+            "Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs"
+        ],
+        [
+            "shiftr_w64",
+            "Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs"
+        ],
+        [
+            "shiftr_w",
+            "Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--word64LE": [
+        [
+            "fixedPrim",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ],
+        [
+            "shiftr_w32",
+            "Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs"
+        ],
+        [
+            "shiftr_w64",
+            "Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs"
+        ],
+        [
+            "shiftr_w",
+            "Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--wordHost": [
+        [
+            "storableToF",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--word16Host": [
+        [
+            "storableToF",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--word32Host": [
+        [
+            "storableToF",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--word64Host": [
+        [
+            "storableToF",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--int8": [
+        [
+            "word8",
+            "Data/ByteString/Builder/Prim/Binary.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--int16BE": [
+        [
+            "word16BE",
+            "Data/ByteString/Builder/Prim/Binary.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--int16LE": [
+        [
+            "word16LE",
+            "Data/ByteString/Builder/Prim/Binary.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--int32BE": [
+        [
+            "word32BE",
+            "Data/ByteString/Builder/Prim/Binary.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--int32LE": [
+        [
+            "word32LE",
+            "Data/ByteString/Builder/Prim/Binary.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--int64BE": [
+        [
+            "word64BE",
+            "Data/ByteString/Builder/Prim/Binary.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--int64LE": [
+        [
+            "word64LE",
+            "Data/ByteString/Builder/Prim/Binary.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--intHost": [
+        [
+            "storableToF",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--int16Host": [
+        [
+            "storableToF",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--int32Host": [
+        [
+            "storableToF",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--int64Host": [
+        [
+            "storableToF",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--floatBE": [
+        [
+            "encodeFloatViaWord32F",
+            "Data/ByteString/Builder/Prim/Internal/Floating.hs"
+        ],
+        [
+            "word32BE",
+            "Data/ByteString/Builder/Prim/Binary.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--floatLE": [
+        [
+            "encodeFloatViaWord32F",
+            "Data/ByteString/Builder/Prim/Internal/Floating.hs"
+        ],
+        [
+            "word32LE",
+            "Data/ByteString/Builder/Prim/Binary.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--doubleBE": [
+        [
+            "encodeDoubleViaWord64F",
+            "Data/ByteString/Builder/Prim/Internal/Floating.hs"
+        ],
+        [
+            "word64BE",
+            "Data/ByteString/Builder/Prim/Binary.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--doubleLE": [
+        [
+            "encodeDoubleViaWord64F",
+            "Data/ByteString/Builder/Prim/Internal/Floating.hs"
+        ],
+        [
+            "word64LE",
+            "Data/ByteString/Builder/Prim/Binary.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--floatHost": [
+        [
+            "storableToF",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/Prim/Binary.hs--doubleHost": [
+        [
+            "storableToF",
+            "Data/ByteString/Builder/Prim/Internal.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/RealFloat/TableGenerator.hs--float_pow5_inv_bitcount": [],
+    "Data/ByteString/Builder/RealFloat/TableGenerator.hs--float_pow5_bitcount": [],
+    "Data/ByteString/Builder/RealFloat/TableGenerator.hs--double_pow5_bitcount": [],
+    "Data/ByteString/Builder/RealFloat/TableGenerator.hs--double_pow5_inv_bitcount": [],
+    "Data/ByteString/Builder/RealFloat/TableGenerator.hs--blen": [],
+    "Data/ByteString/Builder/RealFloat/TableGenerator.hs--finv": [
+        [
+            "blen",
+            "Data/ByteString/Builder/RealFloat/TableGenerator.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/RealFloat/TableGenerator.hs--fnorm": [
+        [
+            "blen",
+            "Data/ByteString/Builder/RealFloat/TableGenerator.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/RealFloat/TableGenerator.hs--splitWord128s": [],
+    "Data/ByteString/Builder/RealFloat/TableGenerator.hs--splitWord128": [],
+    "Data/ByteString/Builder/RealFloat/TableGenerator.hs--case64": [],
+    "Data/ByteString/Builder/RealFloat/TableGenerator.hs--case128": [
+        [
+            "splitWord128",
+            "Data/ByteString/Builder/RealFloat/TableGenerator.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/RealFloat/TableGenerator.hs--get_range": [],
+    "Data/ByteString/Builder/RealFloat/TableGenerator.hs--float_max_split": [
+        [
+            "get_range",
+            "Data/ByteString/Builder/RealFloat/TableGenerator.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/RealFloat/TableGenerator.hs--float_max_inv_split": [
+        [
+            "get_range",
+            "Data/ByteString/Builder/RealFloat/TableGenerator.hs"
+        ],
+        [
+            "float_max_split",
+            "Data/ByteString/Builder/RealFloat/TableGenerator.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/RealFloat/TableGenerator.hs--double_max_split": [
+        [
+            "get_range",
+            "Data/ByteString/Builder/RealFloat/TableGenerator.hs"
+        ]
+    ],
+    "Data/ByteString/Builder/RealFloat/TableGenerator.hs--double_max_inv_split": [
+        [
+            "get_range",
+            "Data/ByteString/Builder/RealFloat/TableGenerator.hs"
+        ],
+        [
+            "double_max_split",
+            "Data/ByteString/Builder/RealFloat/TableGenerator.hs"
+        ]
+    ],
+    "Data/ByteString/Utils/ByteOrder.hs--hostByteOrder": [],
+    "Data/ByteString/Utils/ByteOrder.hs--whenLittleEndian": [
+        [
+            "hostByteOrder",
+            "Data/ByteString/Utils/ByteOrder.hs"
+        ]
+    ],
+    "Data/ByteString/Utils/ByteOrder.hs--whenBigEndian": [
+        [
+            "hostByteOrder",
+            "Data/ByteString/Utils/ByteOrder.hs"
+        ]
+    ],
+    "Data/ByteString/Utils/UnalignedAccess.hs--unalignedWriteU16": [],
+    "Data/ByteString/Utils/UnalignedAccess.hs--unalignedWriteU32": [],
+    "Data/ByteString/Utils/UnalignedAccess.hs--unalignedWriteU64": [],
+    "Data/ByteString/Utils/UnalignedAccess.hs--unalignedWriteFloat": [],
+    "Data/ByteString/Utils/UnalignedAccess.hs--unalignedWriteDouble": [],
+    "Data/ByteString/Utils/UnalignedAccess.hs--unalignedReadU64": [],
+    "Data/LiquidPtr.hs--fst3": [],
+    "Data/LiquidPtr.hs--snd3": [],
+    "Data/LiquidPtr.hs--myMin": [],
+    "Data/LiquidPtr.hs--myMax": [],
+    "Data/LiquidPtr.hs--newForeignPtr_": [],
+    "Data/LiquidPtr.hs--withForeignPtr": [],
+    "Data/LiquidPtr.hs--peekByteOff": [],
+    "Data/LiquidPtr.hs--peekElemOff": [],
+    "Data/LiquidPtr.hs--pokeByteOff": [],
+    "Data/LiquidPtr.hs--pokeElemOff": [],
+    "Data/LiquidPtr.hs--peek": [],
+    "Data/LiquidPtr.hs--poke": [],
+    "Data/LiquidPtr.hs--nullPtr": [],
+    "Data/LiquidPtr.hs--castPtr": [],
+    "Data/LiquidPtr.hs--plusPtr": [],
+    "Data/LiquidPtr.hs--minusPtr": [],
+    "Data/LiquidPtr.hs--mkPtr": [],
+    "Data/LiquidPtr.hs--plusForeignPtr": [],
+    "Data/LiquidPtr.hs--allocaBytes": [],
+    "Data/LiquidPtr.hs--unsafeForeignPtrToPtr": [],
+    "Data/LiquidPtr.hs--unsafeError": []
+}

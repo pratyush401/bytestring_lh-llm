@@ -3,4 +3,4 @@
 
 prefix=./Data/ByteString;
 stack exec ghc -- -fplugin=LiquidHaskell $prefix/*.hs;
-bash ./my-scripts/bash/clean $prefix;
+bash ./scripts/bash/clean $prefix;
