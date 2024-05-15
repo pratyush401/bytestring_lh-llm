@@ -1150,7 +1150,7 @@ memset :: Ptr Word8 -> Word8 -> CSize -> IO (Ptr Word8)
 -- #else
 
 c_strlen :: CString -> IO CSize
-c_strlen p = checkedCast <$!> Pure.strlen (castPtr p)
+c_strlen p = checkedCast <$!> Pure.strlen (Data.LiquidPtr.castPtr p)
 
 memchr p w len = Pure.memchr p w (checkedCast len)
 
@@ -1304,7 +1304,7 @@ cIsValidUtf8 :: Ptr Word8 -> CSize -> IO CInt
 cIsValidUtf8 = undefined
 
 cIsValidUtf8BA :: ByteArray# -> CSize -> IO CInt
-cIsValidUtf8 = undefined
+cIsValidUtf8BA = undefined
 
 cIsValidUtf8BASafe :: ByteArray# -> CSize -> IO CInt
 cIsValidUtf8BASafe = undefined
@@ -1317,51 +1317,51 @@ cIsValidUtf8Safe = undefined
 ----------------------------------------------------------------
 
 -- | Reverse n-bytes from the second pointer into the first
-c_reverse :: Ptr Word8 -> Ptr Word8 -> CSize -> IO ()
-c_reverse p1 p2 sz = Pure.reverseBytes p1 p2 (checkedCast sz)
+-- c_reverse :: Ptr Word8 -> Ptr Word8 -> CSize -> IO ()
+-- c_reverse p1 p2 sz = Pure.reverseBytes p1 p2 (checkedCast sz)
 
 -- | find maximum char in a packed string
-c_maximum :: Ptr Word8 -> CSize -> IO Word8
-c_maximum ptr sz = Pure.findMaximum ptr (checkedCast sz)
+-- c_maximum :: Ptr Word8 -> CSize -> IO Word8
+-- c_maximum ptr sz = Pure.findMaximum ptr (checkedCast sz)
 
--- | find minimum char in a packed string
-c_minimum :: Ptr Word8 -> CSize -> IO Word8
-c_minimum ptr sz = Pure.findMinimum ptr (checkedCast sz)
+-- -- | find minimum char in a packed string
+-- c_minimum :: Ptr Word8 -> CSize -> IO Word8
+-- c_minimum ptr sz = Pure.findMinimum ptr (checkedCast sz)
 
--- | count the number of occurrences of a char in a string
-c_count :: Ptr Word8 -> CSize -> Word8 -> IO CSize
-c_count ptr sz c = checkedCast <$!> Pure.countOcc ptr (checkedCast sz) c
+-- -- | count the number of occurrences of a char in a string
+-- c_count :: Ptr Word8 -> CSize -> Word8 -> IO CSize
+-- c_count ptr sz c = checkedCast <$!> Pure.countOcc ptr (checkedCast sz) c
 
--- | count the number of occurrences of a char in a string
-c_count_ba :: ByteArray# -> Int -> Word8 -> IO CSize
-c_count_ba ba o c = checkedCast <$!> Pure.countOccBA ba o c
+-- -- | count the number of occurrences of a char in a string
+-- c_count_ba :: ByteArray# -> Int -> Word8 -> IO CSize
+-- c_count_ba ba o c = checkedCast <$!> Pure.countOccBA ba o c
 
--- | duplicate a string, interspersing the character through the elements of the
--- duplicated string
-c_intersperse :: Ptr Word8 -> Ptr Word8 -> CSize -> Word8 -> IO ()
-c_intersperse p1 p2 sz e = Pure.intersperse p1 p2 (checkedCast sz) e
+-- -- | duplicate a string, interspersing the character through the elements of the
+-- -- duplicated string
+-- c_intersperse :: Ptr Word8 -> Ptr Word8 -> CSize -> Word8 -> IO ()
+-- c_intersperse p1 p2 sz e = Pure.intersperse p1 p2 (checkedCast sz) e
 
--- | Quick sort bytes
-c_sort :: Ptr Word8 -> CSize -> IO ()
-c_sort ptr sz = Pure.quickSort ptr (checkedCast sz)
+-- -- | Quick sort bytes
+-- c_sort :: Ptr Word8 -> CSize -> IO ()
+-- c_sort ptr sz = Pure.quickSort ptr (checkedCast sz)
 
-c_elem_index :: ByteArray# -> Word8 -> CSize -> IO CPtrdiff
-c_elem_index ba e sz = checkedCast <$!> Pure.elemIndex ba e (checkedCast sz)
+-- c_elem_index :: ByteArray# -> Word8 -> CSize -> IO CPtrdiff
+-- c_elem_index ba e sz = checkedCast <$!> Pure.elemIndex ba e (checkedCast sz)
 
-cIsValidUtf8BA :: ByteArray# -> CSize -> IO CInt
-cIsValidUtf8BA ba sz = bool_to_cint <$> Pure.isValidUtf8BA ba (checkedCast sz)
+-- cIsValidUtf8BA :: ByteArray# -> CSize -> IO CInt
+-- cIsValidUtf8BA ba sz = bool_to_cint <$> Pure.isValidUtf8BA ba (checkedCast sz)
 
-cIsValidUtf8 :: Ptr Word8 -> CSize -> IO CInt
-cIsValidUtf8 ptr sz = bool_to_cint <$> Pure.isValidUtf8 ptr (checkedCast sz)
+-- cIsValidUtf8 :: Ptr Word8 -> CSize -> IO CInt
+-- cIsValidUtf8 ptr sz = bool_to_cint <$> Pure.isValidUtf8 ptr (checkedCast sz)
 
--- Pure module is compiled with `-fno-omit-yields` so it's always safe (it won't
--- block on large inputs)
+-- -- Pure module is compiled with `-fno-omit-yields` so it's always safe (it won't
+-- -- block on large inputs)
 
-cIsValidUtf8BASafe :: ByteArray# -> CSize -> IO CInt
-cIsValidUtf8BASafe = cIsValidUtf8BA
+-- cIsValidUtf8BASafe :: ByteArray# -> CSize -> IO CInt
+-- cIsValidUtf8BASafe = cIsValidUtf8BA
 
-cIsValidUtf8Safe :: Ptr Word8 -> CSize -> IO CInt
-cIsValidUtf8Safe = cIsValidUtf8
+-- cIsValidUtf8Safe :: Ptr Word8 -> CSize -> IO CInt
+-- cIsValidUtf8Safe = cIsValidUtf8
 
 bool_to_cint :: Bool -> CInt
 bool_to_cint True = 1
@@ -1376,28 +1376,28 @@ checkedCast x =
 -- Haskell version of functions in itoa.c
 ----------------------------------------------------------------
 
-c_int_dec :: CInt -> Ptr Word8 -> IO (Ptr Word8)
-c_int_dec = Pure.encodeSignedDec
+-- c_int_dec :: CInt -> Ptr Word8 -> IO (Ptr Word8)
+-- c_int_dec = Pure.encodeSignedDec
 
-c_long_long_int_dec :: CLLong -> Ptr Word8 -> IO (Ptr Word8)
-c_long_long_int_dec = Pure.encodeSignedDec
+-- c_long_long_int_dec :: CLLong -> Ptr Word8 -> IO (Ptr Word8)
+-- c_long_long_int_dec = Pure.encodeSignedDec
 
-c_uint_dec :: CUInt -> Ptr Word8 -> IO (Ptr Word8)
-c_uint_dec = Pure.encodeUnsignedDec
+-- c_uint_dec :: CUInt -> Ptr Word8 -> IO (Ptr Word8)
+-- c_uint_dec = Pure.encodeUnsignedDec
 
-c_long_long_uint_dec :: CULLong -> Ptr Word8 -> IO (Ptr Word8)
-c_long_long_uint_dec = Pure.encodeUnsignedDec
+-- c_long_long_uint_dec :: CULLong -> Ptr Word8 -> IO (Ptr Word8)
+-- c_long_long_uint_dec = Pure.encodeUnsignedDec
 
-c_uint_hex :: CUInt -> Ptr Word8 -> IO (Ptr Word8)
-c_uint_hex = Pure.encodeUnsignedHex
+-- c_uint_hex :: CUInt -> Ptr Word8 -> IO (Ptr Word8)
+-- c_uint_hex = Pure.encodeUnsignedHex
 
-c_long_long_uint_hex :: CULLong -> Ptr Word8 -> IO (Ptr Word8)
-c_long_long_uint_hex = Pure.encodeUnsignedHex
+-- c_long_long_uint_hex :: CULLong -> Ptr Word8 -> IO (Ptr Word8)
+-- c_long_long_uint_hex = Pure.encodeUnsignedHex
 
-c_int_dec_padded9 :: CInt -> Ptr Word8 -> IO ()
-c_int_dec_padded9 = Pure.encodeUnsignedDecPadded 9
+-- c_int_dec_padded9 :: CInt -> Ptr Word8 -> IO ()
+-- c_int_dec_padded9 = Pure.encodeUnsignedDecPadded 9
 
-c_long_long_int_dec_padded18 :: CLLong -> Ptr Word8 -> IO ()
-c_long_long_int_dec_padded18 = Pure.encodeUnsignedDecPadded 18
+-- c_long_long_int_dec_padded18 :: CLLong -> Ptr Word8 -> IO ()
+-- c_long_long_int_dec_padded18 = Pure.encodeUnsignedDecPadded 18
 
 -- #endif
