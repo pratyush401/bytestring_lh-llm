@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<title>./Data/ByteString/Internal.hs</title>
+</head>
+<head>
+<link type='text/css' rel='stylesheet' href='liquid.css' />
+</head>
+
+<body>
+<hr>
+Put mouse over identifiers to see inferred types
+<pre><span class=hs-linenum> 1: </span><a class=annot href="#"><span class=annottext>{VV##1619 : GHC.Types.Module | $k_##1620}</span><span class='hs-comment'>{-# OPTIONS_HADDOCK not-home #-}</span></a>
+<span class=hs-linenum> 2: </span>
+<span class=hs-linenum> 3: </span><span class='hs-comment'>-- |</span>
+<span class=hs-linenum> 4: </span><span class='hs-comment'>-- Module      : Data.ByteString.Internal</span>
+<span class=hs-linenum> 5: </span><span class='hs-comment'>-- Copyright   : (c) Don Stewart 2006-2008</span>
+<span class=hs-linenum> 6: </span><span class='hs-comment'>--               (c) Duncan Coutts 2006-2012</span>
+<span class=hs-linenum> 7: </span><span class='hs-comment'>-- License     : BSD-style</span>
+<span class=hs-linenum> 8: </span><span class='hs-comment'>-- Maintainer  : dons00@gmail.com, duncan@community.haskell.org</span>
+<span class=hs-linenum> 9: </span><span class='hs-comment'>-- Stability   : unstable</span>
+<span class=hs-linenum>10: </span><span class='hs-comment'>-- Portability : non-portable</span>
+<span class=hs-linenum>11: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum>12: </span><span class='hs-comment'>-- A module containing semi-public 'ByteString' internals. This exposes the</span>
+<span class=hs-linenum>13: </span><span class='hs-comment'>-- 'ByteString' representation and low level construction functions. As such</span>
+<span class=hs-linenum>14: </span><span class='hs-comment'>-- all the functions in this module are unsafe. The API is also not stable.</span>
+<span class=hs-linenum>15: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum>16: </span><span class='hs-comment'>-- Where possible application should instead use the functions from the normal</span>
+<span class=hs-linenum>17: </span><span class='hs-comment'>-- public interface modules, such as "Data.ByteString.Unsafe". Packages that</span>
+<span class=hs-linenum>18: </span><span class='hs-comment'>-- extend the ByteString system at a low level will need to use this module.</span>
+<span class=hs-linenum>19: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum>20: </span><span class='hs-keyword'>module</span> <span class='hs-conid'>Data.ByteString.Internal</span> <span class='hs-layout'>(</span>
+<span class=hs-linenum>21: </span>
+<span class=hs-linenum>22: </span>        <span class='hs-comment'>-- * The @ByteString@ type and representation</span>
+<span class=hs-linenum>23: </span>        <span class='hs-conid'>ByteString</span>
+<span class=hs-linenum>24: </span>        <span class='hs-layout'>(</span> <span class='hs-conid'>BS</span>
+<span class=hs-linenum>25: </span>        <span class='hs-layout'>,</span> <span class='hs-conid'>PS</span> <span class='hs-comment'>-- backwards compatibility shim</span>
+<span class=hs-linenum>26: </span>        <span class='hs-layout'>)</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>27: </span>
+<span class=hs-linenum>28: </span>        <span class='hs-conid'>StrictByteString</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>29: </span>
+<span class=hs-linenum>30: </span>        <span class='hs-comment'>-- * Internal indexing</span>
+<span class=hs-linenum>31: </span>        <span class='hs-varid'>findIndexOrLength</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>32: </span>
+<span class=hs-linenum>33: </span>        <span class='hs-comment'>-- * Conversion with lists: packing and unpacking</span>
+<span class=hs-linenum>34: </span>        <span class='hs-varid'>packBytes</span><span class='hs-layout'>,</span> <span class='hs-varid'>packUptoLenBytes</span><span class='hs-layout'>,</span> <span class='hs-varid'>unsafePackLenBytes</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>35: </span>        <span class='hs-varid'>packChars</span><span class='hs-layout'>,</span> <span class='hs-varid'>packUptoLenChars</span><span class='hs-layout'>,</span> <span class='hs-varid'>unsafePackLenChars</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>36: </span>        <span class='hs-varid'>unpackBytes</span><span class='hs-layout'>,</span> <span class='hs-varid'>unpackAppendBytesLazy</span><span class='hs-layout'>,</span> <span class='hs-varid'>unpackAppendBytesStrict</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>37: </span>        <span class='hs-varid'>unpackChars</span><span class='hs-layout'>,</span> <span class='hs-varid'>unpackAppendCharsLazy</span><span class='hs-layout'>,</span> <span class='hs-varid'>unpackAppendCharsStrict</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>38: </span>        <span class='hs-varid'>unsafePackAddress</span><span class='hs-layout'>,</span> <span class='hs-varid'>unsafePackLenAddress</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>39: </span>        <span class='hs-varid'>unsafePackLiteral</span><span class='hs-layout'>,</span> <span class='hs-varid'>unsafePackLenLiteral</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>40: </span>
+<span class=hs-linenum>41: </span>        <span class='hs-comment'>-- * Low level imperative construction</span>
+<span class=hs-linenum>42: </span>        <span class='hs-varid'>empty</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>43: </span>        <span class='hs-varid'>create</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>44: </span>        <span class='hs-varid'>createUptoN</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>45: </span>        <span class='hs-varid'>createUptoN'</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>46: </span>        <span class='hs-varid'>createAndTrim</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>47: </span>        <span class='hs-varid'>createAndTrim'</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>48: </span>        <span class='hs-varid'>unsafeCreate</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>49: </span>        <span class='hs-varid'>unsafeCreateUptoN</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>50: </span>        <span class='hs-varid'>unsafeCreateUptoN'</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>51: </span>        <span class='hs-varid'>mallocByteString</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>52: </span>
+<span class=hs-linenum>53: </span>        <span class='hs-comment'>-- * Conversion to and from ForeignPtrs</span>
+<span class=hs-linenum>54: </span>        <span class='hs-varid'>mkDeferredByteString</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>55: </span>        <span class='hs-varid'>fromForeignPtr</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>56: </span>        <span class='hs-varid'>toForeignPtr</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>57: </span>        <span class='hs-varid'>fromForeignPtr0</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>58: </span>        <span class='hs-varid'>toForeignPtr0</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>59: </span>
+<span class=hs-linenum>60: </span>        <span class='hs-comment'>-- * Utilities</span>
+<span class=hs-linenum>61: </span>        <span class='hs-varid'>nullForeignPtr</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>62: </span>        <span class='hs-varid'>deferForeignPtrAvailability</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>63: </span>        <span class='hs-conid'>SizeOverflowException</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>64: </span>        <span class='hs-varid'>overflowError</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>65: </span>        <span class='hs-varid'>checkedAdd</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>66: </span>        <span class='hs-varid'>checkedMultiply</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>67: </span>
+<span class=hs-linenum>68: </span>        <span class='hs-comment'>-- * Standard C Functions</span>
+<span class=hs-linenum>69: </span>        <span class='hs-varid'>c_strlen</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>70: </span>        <span class='hs-varid'>c_free_finalizer</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>71: </span>
+<span class=hs-linenum>72: </span>        <span class='hs-varid'>memchr</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>73: </span>        <span class='hs-varid'>memcmp</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>74: </span>        <span class='hs-varid'>memcpyFp</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>75: </span>        <span class='hs-varid'>memset</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>76: </span>
+<span class=hs-linenum>77: </span>        <span class='hs-comment'>-- * cbits functions</span>
+<span class=hs-linenum>78: </span>        <span class='hs-varid'>c_reverse</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>79: </span>        <span class='hs-varid'>c_intersperse</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>80: </span>        <span class='hs-varid'>c_maximum</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>81: </span>        <span class='hs-varid'>c_minimum</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>82: </span>        <span class='hs-varid'>c_count</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>83: </span>        <span class='hs-varid'>c_sort</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>84: </span>
+<span class=hs-linenum>85: </span>        <span class='hs-comment'>-- * Chars</span>
+<span class=hs-linenum>86: </span>        <span class='hs-varid'>w2c</span><span class='hs-layout'>,</span> <span class='hs-varid'>c2w</span><span class='hs-layout'>,</span> <span class='hs-varid'>isSpaceWord8</span><span class='hs-layout'>,</span> <span class='hs-varid'>isSpaceChar8</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>87: </span>
+<span class=hs-linenum>88: </span>        <span class='hs-comment'>-- * Deprecated and unmentionable</span>
+<span class=hs-linenum>89: </span>        <span class='hs-varid'>accursedUnutterablePerformIO</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>90: </span>
+<span class=hs-linenum>91: </span>        <span class='hs-comment'>-- * Exported compatibility shim</span>
+<span class=hs-linenum>92: </span>        <span class='hs-varid'>plusForeignPtr</span><span class='hs-layout'>,</span>
+<span class=hs-linenum>93: </span>        <span class='hs-varid'>unsafeWithForeignPtr</span>
+<span class=hs-linenum>94: </span>  <span class='hs-layout'>)</span> <span class='hs-keyword'>where</span>
+<span class=hs-linenum>95: </span>
+<span class=hs-linenum>96: </span><span class='hs-keyword'>import</span> <span class='hs-conid'>Data.ByteString.Internal.Type</span>
+</pre>
+</body>
+</html>

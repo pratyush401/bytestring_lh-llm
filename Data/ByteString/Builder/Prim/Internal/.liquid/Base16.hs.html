@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<title>./Data/ByteString/Builder/Prim/Internal/Base16.hs</title>
+</head>
+<head>
+<link type='text/css' rel='stylesheet' href='liquid.css' />
+</head>
+
+<body>
+<hr>
+Put mouse over identifiers to see inferred types
+<pre><span class=hs-linenum> 1: </span><a class=annot href="#"><span class=annottext>GHC.Types.Module</span><span class='hs-comment'>{-# LANGUAGE MagicHash #-}</span></a>
+<span class=hs-linenum> 2: </span><span class='hs-comment'>{-# LANGUAGE CPP #-}</span>
+<span class=hs-linenum> 3: </span><span class='hs-comment'>-- |</span>
+<span class=hs-linenum> 4: </span><span class='hs-comment'>-- Copyright   : (c) 2011 Simon Meier</span>
+<span class=hs-linenum> 5: </span><span class='hs-comment'>-- License     : BSD3-style (see LICENSE)</span>
+<span class=hs-linenum> 6: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum> 7: </span><span class='hs-comment'>-- Maintainer  : Simon Meier &lt;iridcode@gmail.com&gt;</span>
+<span class=hs-linenum> 8: </span><span class='hs-comment'>-- Stability   : experimental</span>
+<span class=hs-linenum> 9: </span><span class='hs-comment'>-- Portability : GHC</span>
+<span class=hs-linenum>10: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum>11: </span><span class='hs-comment'>-- Hexadecimal encoding of nibbles (4-bit) and octets (8-bit) as ASCII</span>
+<span class=hs-linenum>12: </span><span class='hs-comment'>-- characters.</span>
+<span class=hs-linenum>13: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum>14: </span><span class='hs-comment'>-- The current implementation is based on a table based encoding inspired by</span>
+<span class=hs-linenum>15: </span><span class='hs-comment'>-- the code in the 'base64-bytestring' library by Bryan O'Sullivan. In our</span>
+<span class=hs-linenum>16: </span><span class='hs-comment'>-- benchmarks on a 32-bit machine it turned out to be the fastest</span>
+<span class=hs-linenum>17: </span><span class='hs-comment'>-- implementation option.</span>
+<span class=hs-linenum>18: </span><span class='hs-comment'>--</span>
+<span class=hs-linenum>19: </span><span class='hs-keyword'>module</span> <span class='hs-conid'>Data.ByteString.Builder.Prim.Internal.Base16</span> <span class='hs-layout'>(</span>
+<span class=hs-linenum>20: </span>    <span class='hs-conid'>EncodingTable</span>
+<span class=hs-linenum>21: </span>  <span class='hs-layout'>,</span> <span class='hs-varid'>lowerTable</span>
+<span class=hs-linenum>22: </span>  <span class='hs-layout'>,</span> <span class='hs-varid'>encode8_as_16h</span>
+<span class=hs-linenum>23: </span>  <span class='hs-layout'>)</span> <span class='hs-keyword'>where</span>
+<span class=hs-linenum>24: </span>
+<span class=hs-linenum>25: </span><span class='hs-keyword'>import</span> <span class='hs-conid'>Foreign</span>
+<span class=hs-linenum>26: </span><span class='hs-keyword'>import</span> <span class='hs-conid'>GHC.Exts</span> <span class='hs-layout'>(</span><span class='hs-conid'>Addr</span><span class='hs-cpp'>#</span><span class='hs-layout'>,</span> <span class='hs-conid'>Ptr</span><span class='hs-layout'>(</span><span class='hs-keyglyph'>..</span><span class='hs-layout'>)</span><span class='hs-layout'>)</span>
+<span class=hs-linenum>27: </span><span class='hs-cpp'>#if PURE_HASKELL</span>
+<span class=hs-linenum>28: </span><span class='hs-keyword'>import</span> <span class='hs-keyword'>qualified</span> <span class='hs-conid'>Data.ByteString.Internal.Pure</span> <span class='hs-keyword'>as</span> <span class='hs-conid'>Pure</span>
+<span class=hs-linenum>29: </span><span class='hs-cpp'>#else</span>
+<span class=hs-linenum>30: </span><span class='hs-keyword'>import</span> <span class='hs-conid'>Foreign.C.Types</span>
+<span class=hs-linenum>31: </span><span class='hs-cpp'>#endif</span>
+<span class=hs-linenum>32: </span>
+<span class=hs-linenum>33: </span><span class='hs-comment'>-- Creating the encoding table</span>
+<span class=hs-linenum>34: </span><span class='hs-comment'>------------------------------</span>
+<span class=hs-linenum>35: </span>
+<span class=hs-linenum>36: </span><span class='hs-comment'>-- | An encoding table for Base16 encoding.</span>
+<span class=hs-linenum>37: </span><span class='hs-keyword'>data</span> <span class='hs-conid'>EncodingTable</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>EncodingTable</span> <span class='hs-conid'>Addr</span><span class='hs-cpp'>#</span>
+<span class=hs-linenum>38: </span>
+<span class=hs-linenum>39: </span><span class='hs-comment'>-- | The encoding table for hexadecimal values with lower-case characters;</span>
+<span class=hs-linenum>40: </span><span class='hs-comment'>-- e.g., deadbeef.</span>
+<span class=hs-linenum>41: </span><span class='hs-definition'>lowerTable</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>EncodingTable</span>
+<span class=hs-linenum>42: </span><a class=annot href="#"><span class=annottext>Data.ByteString.Builder.Prim.Internal.Base16.EncodingTable</span><span class='hs-definition'>lowerTable</span></a> <span class='hs-keyglyph'>=</span>
+<span class=hs-linenum>43: </span><span class='hs-cpp'>#if PURE_HASKELL</span>
+<span class=hs-linenum>44: </span>  <span class='hs-keyword'>case</span> <span class='hs-conid'>Pure.lower_hex_table</span> <span class='hs-keyword'>of</span>
+<span class=hs-linenum>45: </span>    <span class='hs-conid'>Ptr</span> <span class='hs-varid'>p</span><span class='hs-cpp'>#</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>EncodingTable</span> <span class='hs-varid'>p</span><span class='hs-cpp'>#</span>
+<span class=hs-linenum>46: </span><span class='hs-cpp'>#else</span>
+<span class=hs-linenum>47: </span>  <span class='hs-keyword'>case</span> <a class=annot href="#"><span class=annottext>{v : (GHC.Ptr.Ptr Foreign.C.Types.CChar) | v == c_lower_hex_table}</span><span class='hs-varid'>c_lower_hex_table</span></a> <span class='hs-keyword'>of</span>
+<span class=hs-linenum>48: </span>    <span class='hs-conid'>Ptr</span> <span class='hs-varid'>p</span><span class='hs-cpp'>#</span> <span class='hs-keyglyph'>-&gt;</span> <a class=annot href="#"><span class=annottext>GHC.Prim.Addr# -&gt; Data.ByteString.Builder.Prim.Internal.Base16.EncodingTable</span><span class='hs-conid'>EncodingTable</span></a> <a class=annot href="#"><span class=annottext>{v : GHC.Prim.Addr# | v == p#}</span><span class='hs-varid'>p</span></a><span class='hs-cpp'>#</span>
+<span class=hs-linenum>49: </span>
+<span class=hs-linenum>50: </span><span class='hs-comment'>-- foreign import capi "&amp;hs_bytestring_lower_hex_table"</span>
+<span class=hs-linenum>51: </span><span class='hs-comment'>--  c_lower_hex_table :: Ptr CChar</span>
+<span class=hs-linenum>52: </span><span class='hs-definition'>c_lower_hex_table</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>Ptr</span> <span class='hs-conid'>CChar</span>
+<span class=hs-linenum>53: </span><a class=annot href="#"><span class=annottext>(GHC.Ptr.Ptr Foreign.C.Types.CChar)</span><span class='hs-definition'>c_lower_hex_table</span></a> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>undefined</span>
+<span class=hs-linenum>54: </span><span class='hs-cpp'>#endif</span>
+<span class=hs-linenum>55: </span>
+<span class=hs-linenum>56: </span><span class='hs-comment'>-- | Encode an octet as 16bit word comprising both encoded nibbles ordered</span>
+<span class=hs-linenum>57: </span><span class='hs-comment'>-- according to the host endianness. Writing these 16bit to memory will write</span>
+<span class=hs-linenum>58: </span><span class='hs-comment'>-- the nibbles in the correct order (i.e. big-endian).</span>
+<span class=hs-linenum>59: </span><span class='hs-comment'>{-# INLINE encode8_as_16h #-}</span>
+<span class=hs-linenum>60: </span><span class='hs-definition'>encode8_as_16h</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>EncodingTable</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Word8</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>IO</span> <span class='hs-conid'>Word16</span>
+<span class=hs-linenum>61: </span><a class=annot href="#"><span class=annottext>Data.ByteString.Builder.Prim.Internal.Base16.EncodingTable -&gt; GHC.Word.Word8 -&gt; (GHC.Types.IO GHC.Word.Word16)</span><span class='hs-definition'>encode8_as_16h</span></a> <span class='hs-layout'>(</span><span class='hs-conid'>EncodingTable</span> <span class='hs-varid'>table</span><span class='hs-layout'>)</span> <span class='hs-keyglyph'>=</span>
+<span class=hs-linenum>62: </span>    <a class=annot href="#"><span class=annottext>GHC.Types.Int -&gt; (GHC.Types.IO GHC.Word.Word16)</span><span class='hs-varid'>peekElemOff</span></a> <a class=annot href="#"><span class=annottext>(GHC.Ptr.Ptr GHC.Word.Word16)</span><span class='hs-layout'>(</span></a><span class='hs-conid'>Ptr</span> <a class=annot href="#"><span class=annottext>{v : GHC.Prim.Addr# | v == table}</span><span class='hs-varid'>table</span></a><span class='hs-layout'>)</span> <span class='hs-varop'>.</span> <a class=annot href="#"><span class=annottext>x1:GHC.Word.Word8 -&gt; {v : GHC.Types.Int | v == x1}</span><span class='hs-varid'>fromIntegral</span></a>
+</pre>
+</body>
+</html>
