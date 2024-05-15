@@ -11,3 +11,5 @@ dist-newstyle/
 cabal.project.local*
 .nvimrc
 .ghc.environment*
+/.liquid
+/.stack-work
