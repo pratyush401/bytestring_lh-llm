@@ -144,12 +144,10 @@ import Foreign.C.String         (CString)
 import Foreign.Marshal.Utils
 import Foreign.Marshal.Alloc    (finalizerFree)
 
-#if PURE_HASKELL
 import qualified Data.ByteString.Internal.Pure as Pure
 import Data.Bits                (toIntegralSized, Bits)
 import Data.Maybe               (fromMaybe)
 import Control.Monad            ((<$!>))
-#endif
 
 import Data.LiquidPtr
 
@@ -1130,29 +1128,29 @@ memchr :: Ptr Word8 -> Word8 -> CSize -> IO (Ptr Word8)
 memcmp :: Ptr Word8 -> Ptr Word8 -> Int -> IO CInt
 -- {-# DEPRECATED memset "Use Foreign.Marshal.Utils.fillBytes instead" #-}
 -- | deprecated since @bytestring-0.11.5.0@
--- memset :: Ptr Word8 -> Word8 -> CSize -> IO (Ptr Word8)
+memset :: Ptr Word8 -> Word8 -> CSize -> IO (Ptr Word8)
 
-#if !PURE_HASKELL
+-- #if !PURE_HASKELL
 
-foreign import ccall unsafe "string.h strlen" c_strlen
-    :: CString -> IO CSize
+-- foreign import ccall unsafe "string.h strlen" c_strlen
+--     :: CString -> IO CSize
 
-foreign import ccall unsafe "string.h memchr" c_memchr
-    :: Ptr Word8 -> CInt -> CSize -> IO (Ptr Word8)
-memchr p w sz = c_memchr p (fromIntegral w) sz
+-- foreign import ccall unsafe "string.h memchr" c_memchr
+--     :: Ptr Word8 -> CInt -> CSize -> IO (Ptr Word8)
+-- memchr p w sz = c_memchr p (fromIntegral w) sz
 
-foreign import ccall unsafe "string.h memcmp" c_memcmp
-    :: Ptr Word8 -> Ptr Word8 -> CSize -> IO CInt
-memcmp p q s = c_memcmp p q (fromIntegral s)
+-- foreign import ccall unsafe "string.h memcmp" c_memcmp
+--     :: Ptr Word8 -> Ptr Word8 -> CSize -> IO CInt
+-- memcmp p q s = c_memcmp p q (fromIntegral s)
 
-foreign import ccall unsafe "string.h memset" c_memset
-    :: Ptr Word8 -> CInt -> CSize -> IO (Ptr Word8)
-memset p w sz = c_memset p (fromIntegral w) sz
+-- foreign import ccall unsafe "string.h memset" c_memset
+--     :: Ptr Word8 -> CInt -> CSize -> IO (Ptr Word8)
+-- memset p w sz = c_memset p (fromIntegral w) sz
 
-#else
+-- #else
 
 c_strlen :: CString -> IO CSize
-c_strlen p = checkedCast <$!> Pure.strlen (castPtr p)
+c_strlen p = checkedCast <$!> Pure.strlen (Data.LiquidPtr.castPtr p)
 
 memchr p w len = Pure.memchr p w (checkedCast len)
 
@@ -1160,7 +1158,7 @@ memcmp p q s = checkedCast <$!> Pure.memcmp p q s
 
 memset p w len = p <$ fillBytes p w (checkedCast len)
 
-#endif
+-- #endif
 
 -- {-# DEPRECATED memcpy "Use Foreign.Marshal.Utils.copyBytes instead" #-}
 -- | deprecated since @bytestring-0.11.5.0@
@@ -1181,129 +1179,189 @@ c_free_finalizer = finalizerFree
 -- Uses our C code
 --
 
-#if !PURE_HASKELL
+-- #if !PURE_HASKELL
 
-foreign import ccall unsafe "static fpstring.h fps_reverse" c_reverse
-    :: Ptr Word8 -> Ptr Word8 -> CSize -> IO ()
+-- foreign import ccall unsafe "static fpstring.h fps_reverse" c_reverse
+--     :: Ptr Word8 -> Ptr Word8 -> CSize -> IO ()
 
-foreign import ccall unsafe "static fpstring.h fps_intersperse" c_intersperse
-    :: Ptr Word8 -> Ptr Word8 -> CSize -> Word8 -> IO ()
+-- foreign import ccall unsafe "static fpstring.h fps_intersperse" c_intersperse
+--     :: Ptr Word8 -> Ptr Word8 -> CSize -> Word8 -> IO ()
 
-foreign import ccall unsafe "static fpstring.h fps_maximum" c_maximum
-    :: Ptr Word8 -> CSize -> IO Word8
+-- foreign import ccall unsafe "static fpstring.h fps_maximum" c_maximum
+--     :: Ptr Word8 -> CSize -> IO Word8
 
-foreign import ccall unsafe "static fpstring.h fps_minimum" c_minimum
-    :: Ptr Word8 -> CSize -> IO Word8
+-- foreign import ccall unsafe "static fpstring.h fps_minimum" c_minimum
+--     :: Ptr Word8 -> CSize -> IO Word8
 
-foreign import ccall unsafe "static fpstring.h fps_count" c_count
-    :: Ptr Word8 -> CSize -> Word8 -> IO CSize
+-- foreign import ccall unsafe "static fpstring.h fps_count" c_count
+--     :: Ptr Word8 -> CSize -> Word8 -> IO CSize
 
--- fps_count works with both pointers and ByteArray#
-foreign import ccall unsafe "static fpstring.h fps_count" c_count_ba
-    :: ByteArray# -> CSize -> Word8 -> IO CSize
+-- -- fps_count works with both pointers and ByteArray#
+-- foreign import ccall unsafe "static fpstring.h fps_count" c_count_ba
+--     :: ByteArray# -> CSize -> Word8 -> IO CSize
 
-foreign import ccall unsafe "static fpstring.h fps_sort" c_sort
-    :: Ptr Word8 -> CSize -> IO ()
+-- foreign import ccall unsafe "static fpstring.h fps_sort" c_sort
+--     :: Ptr Word8 -> CSize -> IO ()
 
-foreign import ccall unsafe "static sbs_elem_index"
-    c_elem_index :: ByteArray# -> Word8 -> CSize -> IO CPtrdiff
-
-
-
-foreign import ccall unsafe "static _hs_bytestring_uint_dec" c_uint_dec
-    :: CUInt -> Ptr Word8 -> IO (Ptr Word8)
-
-foreign import ccall unsafe "static _hs_bytestring_long_long_uint_dec" c_long_long_uint_dec
-    :: CULLong -> Ptr Word8 -> IO (Ptr Word8)
-
-foreign import ccall unsafe "static _hs_bytestring_int_dec" c_int_dec
-    :: CInt -> Ptr Word8 -> IO (Ptr Word8)
-
-foreign import ccall unsafe "static _hs_bytestring_long_long_int_dec" c_long_long_int_dec
-    :: CLLong -> Ptr Word8 -> IO (Ptr Word8)
-
-foreign import ccall unsafe "static _hs_bytestring_uint_hex" c_uint_hex
-    :: CUInt -> Ptr Word8 -> IO (Ptr Word8)
-
-foreign import ccall unsafe "static _hs_bytestring_long_long_uint_hex" c_long_long_uint_hex
-    :: CULLong -> Ptr Word8 -> IO (Ptr Word8)
-
-foreign import ccall unsafe "static _hs_bytestring_int_dec_padded9"
-    c_int_dec_padded9 :: CInt -> Ptr Word8 -> IO ()
-
-foreign import ccall unsafe "static _hs_bytestring_long_long_int_dec_padded18"
-    c_long_long_int_dec_padded18 :: CLLong -> Ptr Word8 -> IO ()
-
--- We import bytestring_is_valid_utf8 both unsafe and safe. For small inputs
--- we can use the unsafe version to get a bit more performance, but for large
--- inputs the safe version should be used to avoid GC synchronization pauses
--- in multithreaded contexts.
-
-foreign import ccall unsafe "bytestring_is_valid_utf8" cIsValidUtf8BA
-  :: ByteArray# -> CSize -> IO CInt
-
-foreign import ccall safe "bytestring_is_valid_utf8" cIsValidUtf8BASafe
-  :: ByteArray# -> CSize -> IO CInt
-
-foreign import ccall unsafe "bytestring_is_valid_utf8" cIsValidUtf8
-  :: Ptr Word8 -> CSize -> IO CInt
-
-foreign import ccall safe "bytestring_is_valid_utf8" cIsValidUtf8Safe
-  :: Ptr Word8 -> CSize -> IO CInt
+-- foreign import ccall unsafe "static sbs_elem_index"
+--     c_elem_index :: ByteArray# -> Word8 -> CSize -> IO CPtrdiff
 
 
-#else
+
+-- foreign import ccall unsafe "static _hs_bytestring_uint_dec" c_uint_dec
+--     :: CUInt -> Ptr Word8 -> IO (Ptr Word8)
+
+-- foreign import ccall unsafe "static _hs_bytestring_long_long_uint_dec" c_long_long_uint_dec
+--     :: CULLong -> Ptr Word8 -> IO (Ptr Word8)
+
+-- foreign import ccall unsafe "static _hs_bytestring_int_dec" c_int_dec
+--     :: CInt -> Ptr Word8 -> IO (Ptr Word8)
+
+-- foreign import ccall unsafe "static _hs_bytestring_long_long_int_dec" c_long_long_int_dec
+--     :: CLLong -> Ptr Word8 -> IO (Ptr Word8)
+
+-- foreign import ccall unsafe "static _hs_bytestring_uint_hex" c_uint_hex
+--     :: CUInt -> Ptr Word8 -> IO (Ptr Word8)
+
+-- foreign import ccall unsafe "static _hs_bytestring_long_long_uint_hex" c_long_long_uint_hex
+--     :: CULLong -> Ptr Word8 -> IO (Ptr Word8)
+
+-- foreign import ccall unsafe "static _hs_bytestring_int_dec_padded9"
+--     c_int_dec_padded9 :: CInt -> Ptr Word8 -> IO ()
+
+-- foreign import ccall unsafe "static _hs_bytestring_long_long_int_dec_padded18"
+--     c_long_long_int_dec_padded18 :: CLLong -> Ptr Word8 -> IO ()
+
+-- -- We import bytestring_is_valid_utf8 both unsafe and safe. For small inputs
+-- -- we can use the unsafe version to get a bit more performance, but for large
+-- -- inputs the safe version should be used to avoid GC synchronization pauses
+-- -- in multithreaded contexts.
+
+-- foreign import ccall unsafe "bytestring_is_valid_utf8" cIsValidUtf8BA
+--   :: ByteArray# -> CSize -> IO CInt
+
+-- foreign import ccall safe "bytestring_is_valid_utf8" cIsValidUtf8BASafe
+--   :: ByteArray# -> CSize -> IO CInt
+
+-- foreign import ccall unsafe "bytestring_is_valid_utf8" cIsValidUtf8
+--   :: Ptr Word8 -> CSize -> IO CInt
+
+-- foreign import ccall safe "bytestring_is_valid_utf8" cIsValidUtf8Safe
+--   :: Ptr Word8 -> CSize -> IO CInt
+
+
+-- #else
+
+c_reverse :: Ptr Word8 -> Ptr Word8 -> CSize -> IO ()
+c_reverse = undefined
+
+c_intersperse :: Ptr Word8 -> Ptr Word8 -> CSize -> Word8 -> IO ()
+c_intersperse = undefined
+
+c_maximum :: Ptr Word8 -> CSize -> IO Word8
+c_maximum = undefined
+
+c_minimum :: Ptr Word8 -> CSize -> IO Word8
+c_minimum = undefined
+
+c_count :: Ptr Word8 -> CSize -> Word8 -> IO CSize
+c_count = undefined
+
+c_count_ba :: ByteArray# -> CSize -> Word8 -> IO CSize
+c_count_ba = undefined
+
+c_sort :: Ptr Word8 -> CSize -> IO ()
+c_sort = undefined
+
+c_elem_index :: ByteArray# -> Word8 -> CSize -> IO CPtrdiff
+c_elem_index = undefined
+
+c_uint_dec :: CUInt -> Ptr Word8 -> IO (Ptr Word8)
+c_uint_dec = undefined
+
+c_long_long_uint_dec :: CULLong -> Ptr Word8 -> IO (Ptr Word8)
+c_long_long_uint_dec = undefined
+
+c_int_dec :: CInt -> Ptr Word8 -> IO (Ptr Word8)
+c_int_dec = undefined
+
+c_long_long_int_dec :: CLLong -> Ptr Word8 -> IO (Ptr Word8)
+c_long_long_int_dec = undefined
+
+c_uint_hex :: CUInt -> Ptr Word8 -> IO (Ptr Word8)
+c_uint_hex = undefined
+
+c_long_long_uint_hex :: CULLong -> Ptr Word8 -> IO (Ptr Word8)
+c_long_long_uint_hex = undefined
+
+c_int_dec_padded9 :: CInt -> Ptr Word8 -> IO ()
+c_int_dec_padded9 = undefined
+
+c_long_long_int_dec_padded18 :: CLLong -> Ptr Word8 -> IO ()
+c_long_long_int_dec_padded18 = undefined
+
+cIsValidUtf8 :: Ptr Word8 -> CSize -> IO CInt
+cIsValidUtf8 = undefined
+
+cIsValidUtf8BA :: ByteArray# -> CSize -> IO CInt
+cIsValidUtf8BA = undefined
+
+cIsValidUtf8BASafe :: ByteArray# -> CSize -> IO CInt
+cIsValidUtf8BASafe = undefined
+
+cIsValidUtf8Safe :: Ptr Word8 -> CSize -> IO CInt
+cIsValidUtf8Safe = undefined
 
 ----------------------------------------------------------------
 -- Haskell version of functions in fpstring.c
 ----------------------------------------------------------------
 
 -- | Reverse n-bytes from the second pointer into the first
-c_reverse :: Ptr Word8 -> Ptr Word8 -> CSize -> IO ()
-c_reverse p1 p2 sz = Pure.reverseBytes p1 p2 (checkedCast sz)
+-- c_reverse :: Ptr Word8 -> Ptr Word8 -> CSize -> IO ()
+-- c_reverse p1 p2 sz = Pure.reverseBytes p1 p2 (checkedCast sz)
 
 -- | find maximum char in a packed string
-c_maximum :: Ptr Word8 -> CSize -> IO Word8
-c_maximum ptr sz = Pure.findMaximum ptr (checkedCast sz)
+-- c_maximum :: Ptr Word8 -> CSize -> IO Word8
+-- c_maximum ptr sz = Pure.findMaximum ptr (checkedCast sz)
 
--- | find minimum char in a packed string
-c_minimum :: Ptr Word8 -> CSize -> IO Word8
-c_minimum ptr sz = Pure.findMinimum ptr (checkedCast sz)
+-- -- | find minimum char in a packed string
+-- c_minimum :: Ptr Word8 -> CSize -> IO Word8
+-- c_minimum ptr sz = Pure.findMinimum ptr (checkedCast sz)
 
--- | count the number of occurrences of a char in a string
-c_count :: Ptr Word8 -> CSize -> Word8 -> IO CSize
-c_count ptr sz c = checkedCast <$!> Pure.countOcc ptr (checkedCast sz) c
+-- -- | count the number of occurrences of a char in a string
+-- c_count :: Ptr Word8 -> CSize -> Word8 -> IO CSize
+-- c_count ptr sz c = checkedCast <$!> Pure.countOcc ptr (checkedCast sz) c
 
--- | count the number of occurrences of a char in a string
-c_count_ba :: ByteArray# -> Int -> Word8 -> IO CSize
-c_count_ba ba o c = checkedCast <$!> Pure.countOccBA ba o c
+-- -- | count the number of occurrences of a char in a string
+-- c_count_ba :: ByteArray# -> Int -> Word8 -> IO CSize
+-- c_count_ba ba o c = checkedCast <$!> Pure.countOccBA ba o c
 
--- | duplicate a string, interspersing the character through the elements of the
--- duplicated string
-c_intersperse :: Ptr Word8 -> Ptr Word8 -> CSize -> Word8 -> IO ()
-c_intersperse p1 p2 sz e = Pure.intersperse p1 p2 (checkedCast sz) e
+-- -- | duplicate a string, interspersing the character through the elements of the
+-- -- duplicated string
+-- c_intersperse :: Ptr Word8 -> Ptr Word8 -> CSize -> Word8 -> IO ()
+-- c_intersperse p1 p2 sz e = Pure.intersperse p1 p2 (checkedCast sz) e
 
--- | Quick sort bytes
-c_sort :: Ptr Word8 -> CSize -> IO ()
-c_sort ptr sz = Pure.quickSort ptr (checkedCast sz)
+-- -- | Quick sort bytes
+-- c_sort :: Ptr Word8 -> CSize -> IO ()
+-- c_sort ptr sz = Pure.quickSort ptr (checkedCast sz)
 
-c_elem_index :: ByteArray# -> Word8 -> CSize -> IO CPtrdiff
-c_elem_index ba e sz = checkedCast <$!> Pure.elemIndex ba e (checkedCast sz)
+-- c_elem_index :: ByteArray# -> Word8 -> CSize -> IO CPtrdiff
+-- c_elem_index ba e sz = checkedCast <$!> Pure.elemIndex ba e (checkedCast sz)
 
-cIsValidUtf8BA :: ByteArray# -> CSize -> IO CInt
-cIsValidUtf8BA ba sz = bool_to_cint <$> Pure.isValidUtf8BA ba (checkedCast sz)
+-- cIsValidUtf8BA :: ByteArray# -> CSize -> IO CInt
+-- cIsValidUtf8BA ba sz = bool_to_cint <$> Pure.isValidUtf8BA ba (checkedCast sz)
 
-cIsValidUtf8 :: Ptr Word8 -> CSize -> IO CInt
-cIsValidUtf8 ptr sz = bool_to_cint <$> Pure.isValidUtf8 ptr (checkedCast sz)
+-- cIsValidUtf8 :: Ptr Word8 -> CSize -> IO CInt
+-- cIsValidUtf8 ptr sz = bool_to_cint <$> Pure.isValidUtf8 ptr (checkedCast sz)
 
--- Pure module is compiled with `-fno-omit-yields` so it's always safe (it won't
--- block on large inputs)
+-- -- Pure module is compiled with `-fno-omit-yields` so it's always safe (it won't
+-- -- block on large inputs)
 
-cIsValidUtf8BASafe :: ByteArray# -> CSize -> IO CInt
-cIsValidUtf8BASafe = cIsValidUtf8BA
+-- cIsValidUtf8BASafe :: ByteArray# -> CSize -> IO CInt
+-- cIsValidUtf8BASafe = cIsValidUtf8BA
 
-cIsValidUtf8Safe :: Ptr Word8 -> CSize -> IO CInt
-cIsValidUtf8Safe = cIsValidUtf8
+-- cIsValidUtf8Safe :: Ptr Word8 -> CSize -> IO CInt
+-- cIsValidUtf8Safe = cIsValidUtf8
 
 bool_to_cint :: Bool -> CInt
 bool_to_cint True = 1
@@ -1318,28 +1376,28 @@ checkedCast x =
 -- Haskell version of functions in itoa.c
 ----------------------------------------------------------------
 
-c_int_dec :: CInt -> Ptr Word8 -> IO (Ptr Word8)
-c_int_dec = Pure.encodeSignedDec
+-- c_int_dec :: CInt -> Ptr Word8 -> IO (Ptr Word8)
+-- c_int_dec = Pure.encodeSignedDec
 
-c_long_long_int_dec :: CLLong -> Ptr Word8 -> IO (Ptr Word8)
-c_long_long_int_dec = Pure.encodeSignedDec
+-- c_long_long_int_dec :: CLLong -> Ptr Word8 -> IO (Ptr Word8)
+-- c_long_long_int_dec = Pure.encodeSignedDec
 
-c_uint_dec :: CUInt -> Ptr Word8 -> IO (Ptr Word8)
-c_uint_dec = Pure.encodeUnsignedDec
+-- c_uint_dec :: CUInt -> Ptr Word8 -> IO (Ptr Word8)
+-- c_uint_dec = Pure.encodeUnsignedDec
 
-c_long_long_uint_dec :: CULLong -> Ptr Word8 -> IO (Ptr Word8)
-c_long_long_uint_dec = Pure.encodeUnsignedDec
+-- c_long_long_uint_dec :: CULLong -> Ptr Word8 -> IO (Ptr Word8)
+-- c_long_long_uint_dec = Pure.encodeUnsignedDec
 
-c_uint_hex :: CUInt -> Ptr Word8 -> IO (Ptr Word8)
-c_uint_hex = Pure.encodeUnsignedHex
+-- c_uint_hex :: CUInt -> Ptr Word8 -> IO (Ptr Word8)
+-- c_uint_hex = Pure.encodeUnsignedHex
 
-c_long_long_uint_hex :: CULLong -> Ptr Word8 -> IO (Ptr Word8)
-c_long_long_uint_hex = Pure.encodeUnsignedHex
+-- c_long_long_uint_hex :: CULLong -> Ptr Word8 -> IO (Ptr Word8)
+-- c_long_long_uint_hex = Pure.encodeUnsignedHex
 
-c_int_dec_padded9 :: CInt -> Ptr Word8 -> IO ()
-c_int_dec_padded9 = Pure.encodeUnsignedDecPadded 9
+-- c_int_dec_padded9 :: CInt -> Ptr Word8 -> IO ()
+-- c_int_dec_padded9 = Pure.encodeUnsignedDecPadded 9
 
-c_long_long_int_dec_padded18 :: CLLong -> Ptr Word8 -> IO ()
-c_long_long_int_dec_padded18 = Pure.encodeUnsignedDecPadded 18
+-- c_long_long_int_dec_padded18 :: CLLong -> Ptr Word8 -> IO ()
+-- c_long_long_int_dec_padded18 = Pure.encodeUnsignedDecPadded 18
 
-#endif
+-- #endif

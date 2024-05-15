@@ -71,7 +71,7 @@ module Data.ByteString.Internal (
 
         memchr,
         memcmp,
-        memcpy,
+        memcpyFp,
         memset,
 
         -- * cbits functions

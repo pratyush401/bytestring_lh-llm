@@ -68,6 +68,15 @@ import GHC.Ptr                  (Ptr(..))
 -- Extensions to the basic interface
 --
 
+{-@ measure bsLen @-}
+{-@ bsLen :: _ -> Nat @-}
+bsLen :: ByteString -> Int
+bsLen (BS _ l) = l
+
+{-@ type ByteStringN N  = {v : ByteString | bsLen v == N} @-}
+{-@ type ByteStringB B  = ByteStringN {bsLen B}           @-}
+{-@ type ByteStringNE   = {v : ByteString | bsLen v  > 0} @-}
+
 -- | A variety of 'head' for non-empty ByteStrings. 'unsafeHead' omits the
 -- check for the empty case, so there is an obligation on the programmer
 -- to provide a proof that the ByteString is non-empty.
