@@ -326,8 +326,8 @@ unsafeDupablePerformIO (IO act) = case runRW# act of (# _, res #) -> res
 -- "Data.ByteString.Char8" it can be interpreted as containing 8-bit
 -- characters.
 --
-data ByteString = BS {-# UNPACK #-} !(ForeignPtr Word8) -- payload
-                     {-# UNPACK #-} !Int                -- length
+data ByteString = BS (ForeignPtr Word8) -- payload
+                     Int                -- length
                      -- ^ @since 0.11.0.0
 
 -- | Type synonym for the strict flavour of 'ByteString'.
