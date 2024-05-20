@@ -4,6 +4,8 @@
 {-# LANGUAGE Unsafe #-}
 #endif
 
+{-@ liquid "--no-termination" @-}
+
 -- |
 -- Module      : Data.ByteString.Unsafe
 -- Copyright   : (c) Don Stewart 2006-2008
@@ -62,6 +64,7 @@ import Data.Word                (Word8)
 
 import qualified Foreign.ForeignPtr as FC (finalizeForeignPtr)
 import qualified Foreign.Concurrent as FC (newForeignPtr)
+import qualified GHC.ForeignPtr
 
 import GHC.Prim                 (Addr#)
 -- import GHC.Ptr                  (Ptr(..))
@@ -77,13 +80,27 @@ import GHC.Word (Word64)
 --
 
 {-@ measure bsLen @-}
-{-@ bsLen :: _ -> Nat @-}
+{-@ bsLen :: ByteString -> Int @-}
 bsLen :: ByteString -> Int
 bsLen (BS _ l) = l
 
+{-@ measure bsPointer @-}
+{-@ bsPointer :: ByteString -> GHC.ForeignPtr.ForeignPtr Word8 @-}
+bsPointer :: ByteString -> GHC.ForeignPtr.ForeignPtr Word8
+bsPointer (BS ps _) = ps
+
 {-@ type ByteStringN N  = {v : ByteString | bsLen v == N} @-}
 {-@ type ByteStringB B  = ByteStringN {bsLen B}           @-}
-{-@ type ByteStringNE   = {v : ByteString | bsLen v  > 0} @-}
+{-@ type ByteStringNE   = {v : ByteString | bsLen v > 0} @-}
+
+{-@ type ByteStringVP   = {v : ByteStringNE | (fplen (bsPointer v)) >= 0 } @-}
+
+-- {-@ measure ofForeignPtr :: GHC.ForeignPtr.ForeignPtr a -> GHC.Ptr.Ptr a @-}
+
+{-@ predicate FptrEnd P = ((pbase (ofForeignPtr P)) + (plen (pbase (ofForeignPtr P)))) @-}
+{-@ predicate FPtrSize P = ((PtrEnd (ofForeignPtr P)) - (ofForeignPtr P)) @-}
+{-@ predicate FPtrValid P = ((pbase (ofForeignPtr P)) <= (ofForeignPtr P) && 0 < PtrSize (ofForeignPtr P)) @-}
+{-@ predicate FPtrValidN P N = ((pbase (ofForeignPtr P)) <= (ofForeignPtr P) && N < PtrSize (ofForeignPtr P)) @-}
 
 -- | A variety of 'head' for non-empty ByteStrings. 'unsafeHead' omits the
 -- check for the empty case, so there is an obligation on the programmer
@@ -97,7 +114,7 @@ unsafeHead (BS x l) = assert (l > 0) $
 -- | A variety of 'tail' for non-empty ByteStrings. 'unsafeTail' omits the
 -- check for the empty case. As with 'unsafeHead', the programmer must
 -- provide a separate proof that the ByteString is non-empty.
-{-@ unsafeTail :: b:ByteStringNE -> ByteStringN {bsLen b - 1} @-}
+{-@ unsafeTail :: {b:ByteStringVP | (fplen (bsPointer b)) >= 1}-> ByteStringN {bsLen b - 1} @-}
 unsafeTail :: ByteString -> ByteString
 unsafeTail (BS ps l) = assert (l > 0) $ BS (plusForeignPtr ps 1) (l-1)
 {-# INLINE unsafeTail #-}
@@ -113,6 +130,7 @@ unsafeInit (BS ps l) = assert (l > 0) $ BS ps (l-1)
 -- | A variety of 'last' for non-empty ByteStrings. 'unsafeLast' omits the
 -- check for the empty case. As with 'unsafeHead', the programmer must
 -- provide a separate proof that the ByteString is non-empty.
+{-@ ignore unsafeLast @-}
 {-@ unsafeLast :: ByteStringNE -> Word8 @-}
 unsafeLast :: ByteString -> Word8
 unsafeLast (BS x l) = assert (l > 0) $
@@ -123,7 +141,7 @@ unsafeLast (BS x l) = assert (l > 0) $
 -- This omits the bounds check, which means there is an accompanying
 -- obligation on the programmer to ensure the bounds are checked in some
 -- other way.
-{-@ unsafeIndex :: b:ByteString -> {i:Nat| i < bsLen b} -> Word8 @-}
+{-@ unsafeIndex :: b:ByteString -> {i:Nat | i < bsLen b && FPtrValidN (bsPointer b) i} -> Word8 @-}
 unsafeIndex :: ByteString -> Int -> Word8
 unsafeIndex (BS x l) i = assert (i >= 0 && i < l) $
     accursedUnutterablePerformIO $ withForeignPtr x $ \p -> peekByteOff p i
@@ -138,7 +156,7 @@ unsafeTake n (BS x l) = assert (0 <= n && n <= l) $ BS x n
 
 -- | A variety of 'drop' which omits the checks on @n@ so there is an
 -- obligation on the programmer to provide a proof that @0 <= n <= 'length' xs@.
-{-@ unsafeDrop :: n:Nat -> {b:ByteString | n <= bsLen b} -> ByteStringN { bsLen b - n } @-}
+{-@ unsafeDrop :: n:Nat -> {b:ByteString | n <= bsLen b && (fplen (bsPointer b)) >= 0 && (fplen (bsPointer b)) >= n} -> ByteStringN { bsLen b - n } @-}
 unsafeDrop  :: Int -> ByteString -> ByteString
 unsafeDrop n (BS x l) = assert (0 <= n && n <= l) $ BS (plusForeignPtr x n) (l-n)
 {-# INLINE unsafeDrop #-}
