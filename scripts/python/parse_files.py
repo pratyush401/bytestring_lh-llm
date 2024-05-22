@@ -99,16 +99,24 @@ def construct_dependencies(file_funcs, file_order, lh_functions, output_dir='scr
     dependencies = defaultdict(list)
     refinement_types = dict()
 
+    # iterate once to construct list of functions and 
+    # whether they have a refinement type
+    for file in file_order:
+        for func in file_funcs[file]:
+            dependencies[f"{file}--{func}"] = []
+
+            # record whether function has refinement type
+            has_refinement_type = func in lh_functions
+            refinement_types[f"{file}--{func}"] = has_refinement_type
+
+    # iterate second time to check for each function, 
+    # which function names (including itself?) appear in its body
     for file in file_order:
         # get contents of current file in file order
         fcontents = open(file, "r").read() 
 
         # get list of functions in current file
         for func in file_funcs[file]:
-            # record whether function has refinement type
-            has_refinement_type = func in lh_functions
-            refinement_types[f"{file}--{func}"] = has_refinement_type
-
             # get current function body's if it can be found
             func_contents = get_function_contents(func, fcontents)
             if not func_contents: 
@@ -122,7 +130,17 @@ def construct_dependencies(file_funcs, file_order, lh_functions, output_dir='scr
             dependencies[f"{file}--{func}"] = []
             for dep in dependencies: # iterate through all functions previously been checked
                 dep_file, dep_func = dep.split("--")
-                if dep_func != func and dep_func in func_contents:
+                
+                # TODO recursive calls vs function name appearing in comment/definition
+                if func == dep_func: continue
+
+                # skip for now TODO figure out what to do with these later
+                if dep_func == '(>$<)' or dep_func == '(>*<)' or dep_func == '(!?)': continue
+
+                # search function name (not surrounded by any word characters or ticks)
+                # to avoid cases like foldl being counted as a dependency with foldl'
+                match = re.search(f"[^\w]{dep_func}[^\w']", func_contents)
+                if match:
                     dependencies[f"{file}--{func}"].append([dep_func, dep_file])
  
     print("Total number of functions:", len(dependencies))
@@ -130,7 +148,7 @@ def construct_dependencies(file_funcs, file_order, lh_functions, output_dir='scr
         json.dump(dependencies, json_file, indent=4)
 
     with open(f"{output_dir}bytestring_refinement_types.json", "w") as json_file:
-        json.dump(refinement_types, json_file)
+        json.dump(refinement_types, json_file, indent=4)
 
 
 # run this script from bytestring_lh-llm dir

@@ -8,9 +8,3 @@ Data/ByteString/Utils/ByteOrder.hs
 Data/ByteString/Utils/UnalignedAccess.hs
 Data/LiquidPtr.hs
 Data/ByteString/Internal/Pure.hs
-Data/ByteString/Internal/Type.hs
-Data/ByteString/Short/Internal.hs
-Data/ByteString/Short.hs
-Data/ByteString/Lazy/Internal.hs
-Data/ByteString/Internal.hs
-Data/ByteString/Unsafe.hs

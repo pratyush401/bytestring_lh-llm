@@ -1,0 +1,5 @@
+- recursive calls
+- regex with function names (>$<), (>*<), and (!?)
+- if dependency function is defined in multiple files, determine which module
+- function body with #if #else #endif, 
+  e.g. Data/ByteString/Builder/Prim/Internal/UncheckedShifts.hs--shiftr_w
