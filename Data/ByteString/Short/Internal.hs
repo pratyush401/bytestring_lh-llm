@@ -22,6 +22,8 @@
 
 {-# OPTIONS_GHC -fexpose-all-unfoldings #-}
 
+{-@ LIQUID "--compile-spec" @-}
+
 #include "bytestring-cpp-macros.h"
 
 -- |

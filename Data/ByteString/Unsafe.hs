@@ -1,5 +1,10 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE MagicHash #-}
+#if __GLASGOW_HASKELL__ >= 703
 {-# LANGUAGE Unsafe #-}
+#endif
+
+{-@ liquid "--no-termination" @-}
 
 -- |
 -- Module      : Data.ByteString.Unsafe
@@ -19,38 +24,38 @@
 module Data.ByteString.Unsafe (
 
         -- * Unchecked access
-        unsafeHead,
-        unsafeTail,
-        unsafeInit,
-        unsafeLast,
-        unsafeIndex,
-        unsafeTake,
-        unsafeDrop,
+        unsafeHead,             -- :: ByteString -> Word8
+        unsafeTail,             -- :: ByteString -> ByteString
+        unsafeInit,             -- :: ByteString -> ByteString
+        unsafeLast,             -- :: ByteString -> Word8
+        unsafeIndex,            -- :: ByteString -> Int -> Word8
+        unsafeTake,             -- :: Int -> ByteString -> ByteString
+        unsafeDrop,             -- :: Int -> ByteString -> ByteString
 
         -- * Low level interaction with CStrings
         -- ** Using ByteStrings with functions for CStrings
-        unsafeUseAsCString,
-        unsafeUseAsCStringLen,
+        unsafeUseAsCString,     -- :: ByteString -> (CString -> IO a) -> IO a
+        unsafeUseAsCStringLen,  -- :: ByteString -> (CStringLen -> IO a) -> IO a
 
         -- ** Converting CStrings to ByteStrings
-        unsafePackCString,
-        unsafePackCStringLen,
-        unsafePackMallocCString,
-        unsafePackMallocCStringLen,
+        unsafePackCString,      -- :: CString -> IO ByteString
+        unsafePackCStringLen,   -- :: CStringLen -> IO ByteString
+        unsafePackMallocCString,-- :: CString -> IO ByteString
+        unsafePackMallocCStringLen, -- :: CStringLen -> IO ByteString
 
-        unsafePackAddress,
-        unsafePackAddressLen,
-        unsafePackCStringFinalizer,
-        unsafeFinalize,
+        unsafePackAddress,          -- :: Addr# -> IO ByteString
+        unsafePackAddressLen,       -- :: Int -> Addr# -> IO ByteString
+        unsafePackCStringFinalizer, -- :: Ptr Word8 -> Int -> IO () -> IO ByteString
+        unsafeFinalize,             -- :: ByteString -> IO ()
 
   ) where
 
 import Data.ByteString.Internal
 
-import Foreign.ForeignPtr       (newForeignPtr_, newForeignPtr, withForeignPtr)
-import Foreign.Ptr              (Ptr, castPtr)
+import Foreign.ForeignPtr       (newForeignPtr) -- newForeignPtr_, withForeignPtr)
+import Foreign.Ptr              (Ptr) -- , castPtr)
 
-import Foreign.Storable         (Storable(..))
+-- import Foreign.Storable         (Storable) -- (..))
 import Foreign.C.String         (CString, CStringLen)
 
 import Control.Exception        (assert)
@@ -59,26 +64,57 @@ import Data.Word                (Word8)
 
 import qualified Foreign.ForeignPtr as FC (finalizeForeignPtr)
 import qualified Foreign.Concurrent as FC (newForeignPtr)
+import qualified GHC.ForeignPtr
 
 import GHC.Prim                 (Addr#)
-import GHC.Ptr                  (Ptr(..))
+-- import GHC.Ptr                  (Ptr(..))
+
+import Data.LiquidPtr
+import GHC.Word (Word64)
+
+{-@ embed GHC.Word.Word64       as int @-}
 
 -- ---------------------------------------------------------------------
 --
 -- Extensions to the basic interface
 --
 
+{-@ measure bsLen @-}
+{-@ bsLen :: ByteString -> Int @-}
+bsLen :: ByteString -> Int
+bsLen (BS _ l) = l
+
+{-@ measure bsPointer @-}
+{-@ bsPointer :: ByteString -> GHC.ForeignPtr.ForeignPtr Word8 @-}
+bsPointer :: ByteString -> GHC.ForeignPtr.ForeignPtr Word8
+bsPointer (BS ps _) = ps
+
+{-@ type ByteStringN N  = {v : ByteString | bsLen v == N} @-}
+{-@ type ByteStringB B  = ByteStringN {bsLen B}           @-}
+{-@ type ByteStringNE   = {v : ByteString | bsLen v > 0} @-}
+
+{-@ type ByteStringVP   = {v : ByteStringNE | (fplen (bsPointer v)) >= 0 } @-}
+
+-- {-@ measure ofForeignPtr :: GHC.ForeignPtr.ForeignPtr a -> GHC.Ptr.Ptr a @-}
+
+{-@ predicate FptrEnd P = ((pbase (ofForeignPtr P)) + (plen (pbase (ofForeignPtr P)))) @-}
+{-@ predicate FPtrSize P = ((PtrEnd (ofForeignPtr P)) - (ofForeignPtr P)) @-}
+{-@ predicate FPtrValid P = ((pbase (ofForeignPtr P)) <= (ofForeignPtr P) && 0 < PtrSize (ofForeignPtr P)) @-}
+{-@ predicate FPtrValidN P N = ((pbase (ofForeignPtr P)) <= (ofForeignPtr P) && N < PtrSize (ofForeignPtr P)) @-}
+
 -- | A variety of 'head' for non-empty ByteStrings. 'unsafeHead' omits the
 -- check for the empty case, so there is an obligation on the programmer
 -- to provide a proof that the ByteString is non-empty.
+{-@ unsafeHead :: ByteStringNE -> Word8 @-}
 unsafeHead :: ByteString -> Word8
 unsafeHead (BS x l) = assert (l > 0) $
-    accursedUnutterablePerformIO $ unsafeWithForeignPtr x $ \p -> peek p
+    accursedUnutterablePerformIO $ withForeignPtr x $ \p -> peek p
 {-# INLINE unsafeHead #-}
 
 -- | A variety of 'tail' for non-empty ByteStrings. 'unsafeTail' omits the
 -- check for the empty case. As with 'unsafeHead', the programmer must
 -- provide a separate proof that the ByteString is non-empty.
+{-@ unsafeTail :: {b:ByteStringVP | (fplen (bsPointer b)) >= 1}-> ByteStringN {bsLen b - 1} @-}
 unsafeTail :: ByteString -> ByteString
 unsafeTail (BS ps l) = assert (l > 0) $ BS (plusForeignPtr ps 1) (l-1)
 {-# INLINE unsafeTail #-}
@@ -86,6 +122,7 @@ unsafeTail (BS ps l) = assert (l > 0) $ BS (plusForeignPtr ps 1) (l-1)
 -- | A variety of 'init' for non-empty ByteStrings. 'unsafeInit' omits the
 -- check for the empty case. As with 'unsafeHead', the programmer must
 -- provide a separate proof that the ByteString is non-empty.
+{-@ unsafeInit :: b:ByteStringNE -> ByteStringN {bsLen b - 1} @-}
 unsafeInit :: ByteString -> ByteString
 unsafeInit (BS ps l) = assert (l > 0) $ BS ps (l-1)
 {-# INLINE unsafeInit #-}
@@ -93,28 +130,33 @@ unsafeInit (BS ps l) = assert (l > 0) $ BS ps (l-1)
 -- | A variety of 'last' for non-empty ByteStrings. 'unsafeLast' omits the
 -- check for the empty case. As with 'unsafeHead', the programmer must
 -- provide a separate proof that the ByteString is non-empty.
+{-@ ignore unsafeLast @-}
+{-@ unsafeLast :: ByteStringNE -> Word8 @-}
 unsafeLast :: ByteString -> Word8
 unsafeLast (BS x l) = assert (l > 0) $
-    accursedUnutterablePerformIO $ unsafeWithForeignPtr x $ \p -> peekByteOff p (l-1)
+    accursedUnutterablePerformIO $ withForeignPtr x $ \p -> peekByteOff p (l-1)
 {-# INLINE unsafeLast #-}
 
 -- | Unsafe 'ByteString' index (subscript) operator, starting from 0, returning a 'Word8'
 -- This omits the bounds check, which means there is an accompanying
 -- obligation on the programmer to ensure the bounds are checked in some
 -- other way.
+{-@ unsafeIndex :: b:ByteString -> {i:Nat | i < bsLen b && FPtrValidN (bsPointer b) i} -> Word8 @-}
 unsafeIndex :: ByteString -> Int -> Word8
 unsafeIndex (BS x l) i = assert (i >= 0 && i < l) $
-    accursedUnutterablePerformIO $ unsafeWithForeignPtr x $ \p -> peekByteOff p i
+    accursedUnutterablePerformIO $ withForeignPtr x $ \p -> peekByteOff p i
 {-# INLINE unsafeIndex #-}
 
 -- | A variety of 'take' which omits the checks on @n@ so there is an
 -- obligation on the programmer to provide a proof that @0 <= n <= 'length' xs@.
+{-@ unsafeTake :: n:Nat -> {b:ByteString | n <= bsLen b} -> ByteStringN n @-}
 unsafeTake :: Int -> ByteString -> ByteString
 unsafeTake n (BS x l) = assert (0 <= n && n <= l) $ BS x n
 {-# INLINE unsafeTake #-}
 
 -- | A variety of 'drop' which omits the checks on @n@ so there is an
 -- obligation on the programmer to provide a proof that @0 <= n <= 'length' xs@.
+{-@ unsafeDrop :: n:Nat -> {b:ByteString | n <= bsLen b && (fplen (bsPointer b)) >= 0 && (fplen (bsPointer b)) >= n} -> ByteStringN { bsLen b - n } @-}
 unsafeDrop  :: Int -> ByteString -> ByteString
 unsafeDrop n (BS x l) = assert (0 <= n && n <= l) $ BS (plusForeignPtr x n) (l-n)
 {-# INLINE unsafeDrop #-}
@@ -137,9 +179,10 @@ unsafeDrop n (BS x l) = assert (0 <= n && n <= l) $ BS (plusForeignPtr x n) (l-n
 --
 -- If in doubt, don't use this function.
 --
+{-@ unsafePackAddressLen :: n:Nat -> {a:_|n <= addrLen a}  -> IO (ByteStringN n) @-}
 unsafePackAddressLen :: Int -> Addr# -> IO ByteString
 unsafePackAddressLen len addr# = do
-    p <- newForeignPtr_ (Ptr addr#)
+    p <- newForeignPtr_ (mkPtr addr#)
     return $ BS p len
 {-# INLINE unsafePackAddressLen #-}
 
@@ -152,10 +195,14 @@ unsafePackAddressLen len addr# = do
 -- first argument. Any changes to the original buffer will be reflected
 -- in the resulting 'ByteString'.
 --
+{-@ unsafePackCStringFinalizer :: p:PtrOk Word8 -> {l:Nat | l <= PtrSize p} -> IO () -> IO (ByteStringN l) @-}
 unsafePackCStringFinalizer :: Ptr Word8 -> Int -> IO () -> IO ByteString
 unsafePackCStringFinalizer p l f = do
     fp <- FC.newForeignPtr p f
     return $ BS fp l
+
+{-@ assume Foreign.Concurrent.newForeignPtr :: p:(PtrOk a) -> IO () -> IO (ForeignPtrN a (PtrSize p)) @-}
+
 
 -- | Explicitly run the finaliser associated with a 'ByteString'.
 -- References to this value after finalisation may generate invalid memory
@@ -196,6 +243,7 @@ unsafePackCString cstr = do
 -- modified, this change will be reflected in the resulting 'ByteString',
 -- breaking referential transparency.
 --
+{-@ unsafePackCStringLen :: {cs:_ | 0 <= snd cs && snd cs <= PtrSize (fst cs)} -> IO (ByteStringN {snd cs}) @-}
 unsafePackCStringLen :: CStringLen -> IO ByteString
 unsafePackCStringLen (ptr,len) = do
     fp <- newForeignPtr_ (castPtr ptr)
@@ -218,6 +266,7 @@ unsafePackMallocCString cstr = do
     len <- c_strlen cstr
     return $! BS fp (fromIntegral len)
 
+{-@ assume newForeignPtr :: _ -> p:Ptr a -> IO ({fp: ForeignPtr a | fplen fp = PtrSize p})  @-}
 -- | /O(1)/ Build a 'ByteString' from a malloced 'CStringLen'. This
 -- value will have a @free(3)@ finalizer associated to it.
 --
@@ -229,6 +278,7 @@ unsafePackMallocCString cstr = do
 -- which will result in a /double free/ error, or if you pass it
 -- a 'CString' not allocated with 'Foreign.Marshal.Alloc.malloc'.
 --
+{-@ unsafePackMallocCStringLen :: {cs:_ | 0 <= snd cs && snd cs <= PtrSize (fst cs)} -> IO (ByteStringN {snd cs}) @-}
 unsafePackMallocCStringLen :: CStringLen -> IO ByteString
 unsafePackMallocCStringLen (cstr, len) = do
     fp <- newForeignPtr c_free_finalizer (castPtr cstr)
@@ -262,8 +312,7 @@ unsafePackMallocCStringLen (cstr, len) = do
 -- after this.
 --
 unsafeUseAsCString :: ByteString -> (CString -> IO a) -> IO a
-unsafeUseAsCString (BS ps _) action = withForeignPtr ps $ \p -> action (castPtr p)
--- Cannot use unsafeWithForeignPtr, because action can diverge
+unsafeUseAsCString (BS ps _) ac = withForeignPtr ps $ \p -> ac (castPtr p)
 
 -- | /O(1) construction/ Use a 'ByteString' with a function requiring a
 -- 'CStringLen'.
@@ -282,5 +331,4 @@ unsafeUseAsCString (BS ps _) action = withForeignPtr ps $ \p -> action (castPtr 
 --
 -- If 'Data.ByteString.empty' is given, it will pass @('Foreign.Ptr.nullPtr', 0)@.
 unsafeUseAsCStringLen :: ByteString -> (CStringLen -> IO a) -> IO a
-unsafeUseAsCStringLen (BS ps l) action = withForeignPtr ps $ \p -> action (castPtr p, l)
--- Cannot use unsafeWithForeignPtr, because action can diverge
+unsafeUseAsCStringLen (BS ps l) f = withForeignPtr ps $ \p -> f (castPtr p,l)

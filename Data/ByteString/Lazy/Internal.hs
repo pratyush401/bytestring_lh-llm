@@ -11,6 +11,8 @@
 
 {-# OPTIONS_HADDOCK not-home #-}
 
+{-@ LIQUID "--no-termination" @-}
+
 -- |
 -- Module      : Data.ByteString.Lazy.Internal
 -- Copyright   : (c) Don Stewart 2006-2008
