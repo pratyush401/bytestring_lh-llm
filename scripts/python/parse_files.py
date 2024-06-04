@@ -10,7 +10,7 @@ from collections import defaultdict
 ### CONSTANTS ###
 ROOTDIR = "Data"
 PATTERN_LH_FUNCTIONS  = r"(?:{-@ )([^\s]+?)(?:\n?\s*::)"
-PATTERN_ALL_FUNCTIONS = r"(?:\n)([^\s-]+)(?:\n?\s*::)"
+PATTERN_ALL_FUNCTIONS = r"(?:\n\s*)([^\s-]+)(?:\n?\s*::)"
 PATTERN_FUNC_CONTENTS = r"(?:\n?\s*::[^\n]*\n)(.*?)(?:\n\n|$)"
 
 ### HELPER FUNCTIONS FOR FILES ###
@@ -141,7 +141,7 @@ def construct_dependencies(file_funcs, file_order, lh_functions, output_dir='scr
                 # to avoid cases like foldl being counted as a dependency with foldl'
                 match = re.search(f"[^\w]{dep_func}[^\w']", func_contents)
                 if match:
-                    dependencies[f"{file}--{func}"].append([dep_func, dep_file])
+                    dependencies[f"{file}--{func}"].append([dep_file, dep_func])
  
     print("Total number of functions:", len(dependencies))
     with open(f"{output_dir}bytestring_dependencies.json", "w") as json_file:
@@ -161,39 +161,3 @@ if __name__ == "__main__":
     file_order = read_list("scripts/inputs/file_order_with_lh.txt")
 
     construct_dependencies(file_funcs, file_order, lh_functions)
-
-
-def test_regex_patterns():
-    p = pprint.PrettyPrinter()
-
-    pattern0 = r"(?:\n)(.+)(?:\n?\s*::)"
-    pattern1 = r"(?:\n)(.+?)(?:\s*)(?:\n?\s*::)"
-    pattern2 = r"(?:\n)([^\s]+\s?[^\s]+)(?:\n?\s*::)"
-    pattern3 = r"({-@ [^\s]+?)(?:\n?\s*::)"
-    pattern4 = r"(?:(?:\n)|(?:{-@ ))([^\s-]+)(?:\n?\s*::)"
-    pattern5 = r"(?:\n)([^\s-]+)(?:\n?\s*::)"
-
-    result1 = get_func_source_files(mode="write", pattern=pattern0, key="function", fname="scripts/outputs/result1.csv")
-    result2 = get_func_source_files(mode="write", pattern=pattern5, key="function", fname="scripts/outputs/result2.csv")
-    set1 = set(map(lambda s: s.strip().replace("{-@ ", ""), result1))
-    set2 = set(map(lambda s: s.strip(), result2))
-
-    print(f"\nItems in set1 : {len(set1)}\nItems in set2 {len(set2)}")
-
-    diff1_2 = set1.difference(set2)
-    p.pprint(diff1_2)
-    print("\nNumber of functions in set1 but not set2", len(diff1_2))
-
-    diff2_1 = set2.difference(set1)
-    p.pprint(diff2_1)
-    print("\nNumber of functions in set2 but not set1", len(diff2_1))
-
-    intersect = set1.intersection(set2)
-    p.pprint(intersect)
-    print("Number of functions shared by set1 and set2", len(intersect))
-
-
-def test_get_function_contents():
-    p = pprint.PrettyPrinter()
-    function_source_files = read_csv_to_dict("scripts/inputs/function_source_files.csv")
-    p.pprint(get_function_contents("word64BE", file_name=function_source_files["word64BE"][1])[0][1])

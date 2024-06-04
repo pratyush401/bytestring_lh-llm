@@ -13,3 +13,8 @@ cabal.project.local*
 .ghc.environment*
 /.liquid
 /.stack-work
+
+# for dependency branch, ignore Data / ByteString directories
+Data/*
+
+scripts/python/__pycache__
