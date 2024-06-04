@@ -139,6 +139,7 @@ def construct_dependencies(file_funcs, file_order, lh_functions, output_dir='scr
                     or dep_func == '(>*<)' 
                     or dep_func == '(!?)'
                     or dep_func == 'go'
+                    or dep_func == "go'"
                 ):
                     continue
 

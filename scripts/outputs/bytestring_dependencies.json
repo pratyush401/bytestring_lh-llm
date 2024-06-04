@@ -2936,10 +2936,6 @@
         ],
         [
             "Data/ByteString/Short/Internal.hs",
-            "go'"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
             "indexWord8Array"
         ],
         [
@@ -2969,10 +2965,6 @@
         [
             "Data/ByteString/Short/Internal.hs",
             "createAndTrim2"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go'"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
