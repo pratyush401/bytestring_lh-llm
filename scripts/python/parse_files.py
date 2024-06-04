@@ -135,7 +135,12 @@ def construct_dependencies(file_funcs, file_order, lh_functions, output_dir='scr
                 if func == dep_func: continue
 
                 # skip for now TODO figure out what to do with these later
-                if dep_func == '(>$<)' or dep_func == '(>*<)' or dep_func == '(!?)': continue
+                if (dep_func == '(>$<)' 
+                    or dep_func == '(>*<)' 
+                    or dep_func == '(!?)'
+                    or dep_func == 'go'
+                ):
+                    continue
 
                 # search function name (not surrounded by any word characters or ticks)
                 # to avoid cases like foldl being counted as a dependency with foldl'
