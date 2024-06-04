@@ -492,16 +492,8 @@
             "plusPtr"
         ],
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Short/Internal.hs",
             "length"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ]
     ],
     "Data/ByteString/Internal/Pure.hs--go": [],
@@ -571,14 +563,6 @@
     ],
     "Data/ByteString/Internal/Pure.hs--countOccBA": [
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Short/Internal.hs",
             "indexWord8Array"
         ]
@@ -587,25 +571,9 @@
         [
             "Data/LiquidPtr.hs",
             "peekByteOff"
-        ],
-        [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ]
     ],
     "Data/ByteString/Internal/Pure.hs--elemIndex": [
-        [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
-        ],
         [
             "Data/ByteString/Short/Internal.hs",
             "indexWord8Array"
@@ -701,16 +669,8 @@
             "pokeByteOff"
         ],
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Short/Internal.hs",
             "index"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
@@ -733,16 +693,7 @@
             "isValidUtf8'"
         ]
     ],
-    "Data/ByteString/Internal/Pure.hs--isValidUtf8'": [
-        [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
-        ]
-    ],
+    "Data/ByteString/Internal/Pure.hs--isValidUtf8'": [],
     "Data/ByteString/Internal/Pure.hs--indexIsCont": [],
     "Data/ByteString/Internal/Pure.hs--v": [],
     "Data/ByteString/Internal/Pure.hs--go2": [],
@@ -955,10 +906,6 @@
             "plusForeignPtr"
         ],
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Internal/Type.hs",
             "plusForeignPtr"
         ],
@@ -969,10 +916,6 @@
         [
             "Data/ByteString/Internal/Type.hs",
             "accursedUnutterablePerformIO"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ]
     ],
     "Data/ByteString/Internal/Type.hs--packBytes": [
@@ -1001,10 +944,6 @@
             "plusForeignPtr"
         ],
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Internal/Type.hs",
             "plusForeignPtr"
         ],
@@ -1015,20 +954,12 @@
         [
             "Data/ByteString/Internal/Type.hs",
             "unsafeCreateFp"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ]
     ],
     "Data/ByteString/Internal/Type.hs--unsafePackLenChars": [
         [
             "Data/LiquidPtr.hs",
             "plusForeignPtr"
-        ],
-        [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
         ],
         [
             "Data/ByteString/Internal/Type.hs",
@@ -1045,10 +976,6 @@
         [
             "Data/ByteString/Internal/Type.hs",
             "c2w"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ]
     ],
     "Data/ByteString/Internal/Type.hs--unsafePackAddress": [
@@ -1101,10 +1028,6 @@
             "plusForeignPtr"
         ],
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Internal/Type.hs",
             "plusForeignPtr"
         ],
@@ -1119,20 +1042,12 @@
         [
             "Data/ByteString/Internal/Type.hs",
             "unsafeCreateFpUptoN'"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ]
     ],
     "Data/ByteString/Internal/Type.hs--packUptoLenChars": [
         [
             "Data/LiquidPtr.hs",
             "plusForeignPtr"
-        ],
-        [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
         ],
         [
             "Data/ByteString/Internal/Type.hs",
@@ -1153,10 +1068,6 @@
         [
             "Data/ByteString/Internal/Type.hs",
             "c2w"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ]
     ],
     "Data/ByteString/Internal/Type.hs--unpackBytes": [
@@ -1990,20 +1901,12 @@
     ],
     "Data/ByteString/Short/Internal.hs--packLenBytes": [
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Internal/Type.hs",
             "create"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
             "create"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
@@ -2033,44 +1936,20 @@
     ],
     "Data/ByteString/Short/Internal.hs--unpackAppendCharsLazy": [
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Short/Internal.hs",
             "length"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ]
     ],
     "Data/ByteString/Short/Internal.hs--unpackAppendBytesLazy": [
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Short/Internal.hs",
             "length"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ]
     ],
     "Data/ByteString/Short/Internal.hs--unpackAppendCharsStrict": [
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Short/Internal.hs",
             "asBA"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
@@ -2079,16 +1958,8 @@
     ],
     "Data/ByteString/Short/Internal.hs--unpackAppendBytesStrict": [
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Short/Internal.hs",
             "asBA"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
@@ -2372,10 +2243,6 @@
     ],
     "Data/ByteString/Short/Internal.hs--map": [
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Internal/Type.hs",
             "create"
         ],
@@ -2390,10 +2257,6 @@
         [
             "Data/ByteString/Short/Internal.hs",
             "create"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
@@ -2406,10 +2269,6 @@
     ],
     "Data/ByteString/Short/Internal.hs--reverse": [
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Internal/Type.hs",
             "create"
         ],
@@ -2424,10 +2283,6 @@
         [
             "Data/ByteString/Short/Internal.hs",
             "create"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
@@ -2443,10 +2298,6 @@
     "Data/ByteString/Short/Internal.hs--goWord8Chunk": [],
     "Data/ByteString/Short/Internal.hs--intercalate": [
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Internal/Type.hs",
             "create"
         ],
@@ -2469,10 +2320,6 @@
         [
             "Data/ByteString/Short/Internal.hs",
             "create"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
@@ -2502,10 +2349,6 @@
     "Data/ByteString/Short/Internal.hs--foldr": [
         [
             "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
-            "Data/ByteString/Internal/Pure.hs",
             "v"
         ],
         [
@@ -2515,10 +2358,6 @@
         [
             "Data/ByteString/Short/Internal.hs",
             "asBA"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
@@ -2528,10 +2367,6 @@
     "Data/ByteString/Short/Internal.hs--foldr'": [
         [
             "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
-            "Data/ByteString/Internal/Pure.hs",
             "v"
         ],
         [
@@ -2541,10 +2376,6 @@
         [
             "Data/ByteString/Short/Internal.hs",
             "asBA"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
@@ -2578,20 +2409,12 @@
     ],
     "Data/ByteString/Short/Internal.hs--all": [
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Short/Internal.hs",
             "length"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
             "asBA"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
@@ -2600,20 +2423,12 @@
     ],
     "Data/ByteString/Short/Internal.hs--any": [
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Short/Internal.hs",
             "length"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
             "asBA"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
@@ -2870,10 +2685,6 @@
     ],
     "Data/ByteString/Short/Internal.hs--splitWith": [
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Internal/Type.hs",
             "empty"
         ],
@@ -2884,10 +2695,6 @@
         [
             "Data/ByteString/Short/Internal.hs",
             "null"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
@@ -2982,24 +2789,12 @@
     ],
     "Data/ByteString/Short/Internal.hs--unfoldr": [
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Short/Internal.hs",
             "packBytesRev"
         ]
     ],
     "Data/ByteString/Short/Internal.hs--unfoldrN": [
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Internal/Type.hs",
             "createAndTrim"
         ],
@@ -3014,10 +2809,6 @@
         [
             "Data/ByteString/Short/Internal.hs",
             "createAndTrim"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ]
     ],
     "Data/ByteString/Short/Internal.hs--go'": [],
@@ -3128,10 +2919,6 @@
     ],
     "Data/ByteString/Short/Internal.hs--filter": [
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Internal/Type.hs",
             "createAndTrim'"
         ],
@@ -3146,10 +2933,6 @@
         [
             "Data/ByteString/Short/Internal.hs",
             "createAndTrim'"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
@@ -3176,10 +2959,6 @@
     ],
     "Data/ByteString/Short/Internal.hs--partition": [
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Short/Internal.hs",
             "length"
         ],
@@ -3190,10 +2969,6 @@
         [
             "Data/ByteString/Short/Internal.hs",
             "createAndTrim2"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
@@ -3252,20 +3027,12 @@
     ],
     "Data/ByteString/Short/Internal.hs--findIndex": [
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Short/Internal.hs",
             "length"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
             "asBA"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
@@ -3274,20 +3041,12 @@
     ],
     "Data/ByteString/Short/Internal.hs--findIndices": [
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Short/Internal.hs",
             "length"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
             "asBA"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
@@ -3480,20 +3239,12 @@
     "Data/ByteString/Short/Internal.hs--moduleErrorMsg": [],
     "Data/ByteString/Short/Internal.hs--findFromEndUntil": [
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Short/Internal.hs",
             "length"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
             "asBA"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
@@ -3502,20 +3253,12 @@
     ],
     "Data/ByteString/Short/Internal.hs--findIndexOrLength": [
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Short/Internal.hs",
             "length"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
             "asBA"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
@@ -3534,20 +3277,12 @@
     ],
     "Data/ByteString/Short/Internal.hs--packLenBytesRev": [
         [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
             "Data/ByteString/Internal/Type.hs",
             "create"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
             "create"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
         ],
         [
             "Data/ByteString/Short/Internal.hs",
@@ -3680,26 +3415,8 @@
         ]
     ],
     "Data/ByteString/Lazy/Internal.hs--chunk": [],
-    "Data/ByteString/Lazy/Internal.hs--foldrChunks": [
-        [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
-        ]
-    ],
-    "Data/ByteString/Lazy/Internal.hs--foldlChunks": [
-        [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
-        ]
-    ],
+    "Data/ByteString/Lazy/Internal.hs--foldrChunks": [],
+    "Data/ByteString/Lazy/Internal.hs--foldlChunks": [],
     "Data/ByteString/Lazy/Internal.hs--defaultChunkSize": [
         [
             "Data/ByteString/Lazy/Internal.hs",
@@ -3739,26 +3456,8 @@
             "foldrChunks"
         ]
     ],
-    "Data/ByteString/Lazy/Internal.hs--concat": [
-        [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
-        ]
-    ],
-    "Data/ByteString/Lazy/Internal.hs--times": [
-        [
-            "Data/ByteString/Internal/Pure.hs",
-            "go"
-        ],
-        [
-            "Data/ByteString/Short/Internal.hs",
-            "go"
-        ]
-    ],
+    "Data/ByteString/Lazy/Internal.hs--concat": [],
+    "Data/ByteString/Lazy/Internal.hs--times": [],
     "Data/ByteString/Lazy/Internal.hs--fromStrict": [],
     "Data/ByteString/Lazy/Internal.hs--toStrict": [
         [
