@@ -79,6 +79,7 @@ memchr !p !target !len
         then pure p
         else memchr (p `plusPtr` 1) target (len - 1)
 
+{-@ memcmp :: {p1: GHC.Ptr.Ptr Word8 | 0 < (plen p1)} -> {p2: GHC.Ptr.Ptr Word8 | 0 < (plen p2)} -> Int -> IO Int @-}
 memcmp :: Ptr Word8 -> Ptr Word8 -> Int -> IO Int
 memcmp !p1 !p2 !len
   | len >= 8 = do

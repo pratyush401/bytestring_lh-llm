@@ -58,56 +58,62 @@ unalignedReadU64 = coerce $ \(Ptr p#) s
   -> case readWord8OffAddrAsWord64# p# 0# s of
        (# s', w64# #) -> (# s', W64# w64# #)
 
-#elif HS_UNALIGNED_POKES_OK
+#else
 import Foreign.Storable
 
+{-@ unalignedWriteU16 :: Word16 -> {p: GHC.Ptr.Ptr Word8 | 0 < (plen p)} -> IO () @-}
 unalignedWriteU16 :: Word16 -> Ptr Word8 -> IO ()
 unalignedWriteU16 x p = poke (castPtr p) x
 
+{-@ unalignedWriteU32 :: Word32 -> {p: GHC.Ptr.Ptr Word8 | 0 < (plen p)} -> IO () @-}
 unalignedWriteU32 :: Word32 -> Ptr Word8 -> IO ()
 unalignedWriteU32 x p = poke (castPtr p) x
 
+{-@ unalignedWriteU64 :: Word64 -> {p: GHC.Ptr.Ptr Word8 | 0 < (plen p)} -> IO () @-}
 unalignedWriteU64 :: Word64 -> Ptr Word8 -> IO ()
 unalignedWriteU64 x p = poke (castPtr p) x
 
+{-@ unalignedWriteFloat :: Float -> {p: GHC.Ptr.Ptr Word8 | 0 < (plen p)} -> IO () @-}
 unalignedWriteFloat :: Float -> Ptr Word8 -> IO ()
 unalignedWriteFloat x p = poke (castPtr p) x
 
+{-@ unalignedWriteDouble :: Double -> {p: GHC.Ptr.Ptr Word8 | 0 < (plen p)} -> IO () @-}
 unalignedWriteDouble :: Double -> Ptr Word8 -> IO ()
 unalignedWriteDouble x p = poke (castPtr p) x
 
+{-@ unalignedReadU64 :: {p: GHC.Ptr.Ptr Word8 | 0 < (plen p)} -> IO Word64 @-}
 unalignedReadU64 :: Ptr Word8 -> IO Word64
 unalignedReadU64 p = peek (castPtr p)
 
-#else
--- foreign import ccall unsafe "static fpstring.h fps_unaligned_write_u16"
---  unalignedWriteU16 :: Word16 -> Ptr Word8 -> IO ()
--- foreign import ccall unsafe "static fpstring.h fps_unaligned_write_u32"
---  unalignedWriteU32 :: Word32 -> Ptr Word8 -> IO ()
--- foreign import ccall unsafe "static fpstring.h fps_unaligned_write_u64"
---  unalignedWriteU64 :: Word64 -> Ptr Word8 -> IO ()
--- foreign import ccall unsafe "static fpstring.h fps_unaligned_write_HsFloat"
---  unalignedWriteFloat :: Float -> Ptr Word8 -> IO ()
--- foreign import ccall unsafe "static fpstring.h fps_unaligned_write_HsDouble"
---  unalignedWriteDouble :: Double -> Ptr Word8 -> IO ()
--- foreign import ccall unsafe "static fpstring.h fps_unaligned_read_u64"
---  unalignedReadU64 :: Ptr Word8 -> IO Word64
-unalignedWriteU16 :: Word16 -> Ptr Word8 -> IO ()
-unalignedWriteU16 = undefined
+-- #else
+-- -- foreign import ccall unsafe "static fpstring.h fps_unaligned_write_u16"
+-- --  unalignedWriteU16 :: Word16 -> Ptr Word8 -> IO ()
+-- -- foreign import ccall unsafe "static fpstring.h fps_unaligned_write_u32"
+-- --  unalignedWriteU32 :: Word32 -> Ptr Word8 -> IO ()
+-- -- foreign import ccall unsafe "static fpstring.h fps_unaligned_write_u64"
+-- --  unalignedWriteU64 :: Word64 -> Ptr Word8 -> IO ()
+-- -- foreign import ccall unsafe "static fpstring.h fps_unaligned_write_HsFloat"
+-- --  unalignedWriteFloat :: Float -> Ptr Word8 -> IO ()
+-- -- foreign import ccall unsafe "static fpstring.h fps_unaligned_write_HsDouble"
+-- --  unalignedWriteDouble :: Double -> Ptr Word8 -> IO ()
+-- -- foreign import ccall unsafe "static fpstring.h fps_unaligned_read_u64"
+-- --  unalignedReadU64 :: Ptr Word8 -> IO Word64
+-- unalignedWriteU16 :: Word16 -> Ptr Word8 -> IO ()
+-- unalignedWriteU16 = undefined
 
-unalignedWriteU32 :: Word32 -> Ptr Word8 -> IO ()
-unalignedWriteU32 = undefined
+-- unalignedWriteU32 :: Word32 -> Ptr Word8 -> IO ()
+-- unalignedWriteU32 = undefined
 
-unalignedWriteU64 :: Word64 -> Ptr Word8 -> IO ()
-unalignedWriteU64 = undefined
+-- unalignedWriteU64 :: Word64 -> Ptr Word8 -> IO ()
+-- unalignedWriteU64 = undefined
 
-unalignedWriteFloat :: Float -> Ptr Word8 -> IO ()
-unalignedWriteFloat = undefined
+-- unalignedWriteFloat :: Float -> Ptr Word8 -> IO ()
+-- unalignedWriteFloat = undefined
 
-unalignedWriteDouble :: Double -> Ptr Word8 -> IO ()
-unalignedWriteDouble = undefined
+-- unalignedWriteDouble :: Double -> Ptr Word8 -> IO ()
+-- unalignedWriteDouble = undefined
 
-unalignedReadU64 :: Ptr Word8 -> IO Word64
-unalignedReadU64 = undefined
+-- unalignedReadU64 :: Ptr Word8 -> IO Word64
+-- unalignedReadU64 = undefined
 #endif
 
